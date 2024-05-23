@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+model espiritu {
+  id                        Int                         @id
+  nombre                    String?                     @db.VarChar
+  descripcion               String?                     @db.VarChar
+  foto                      String?                     @db.VarChar
+  relacion_familia_espiritu relacion_familia_espiritu[]
+}
+
+model familia_espiritual {
+  id                        Int                         @id
+  id_usuario                String
+  usuario                   usuario                     @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "id_usuario")
+  relacion_familia_espiritu relacion_familia_espiritu[]
+}
+
+model pregunta {
+  id          Int      @id
+  descripcion String?  @db.VarChar
+  respuesta   String?  @db.VarChar
+  id_usuario  String?
+  usuario     usuario? @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "id_usuario")
+}
+
+model relacion_familia_espiritu {
+  id                 Int                @id
+  id_espiritu        Int
+  id_familia         Int
+  espiritu           espiritu           @relation(fields: [id_espiritu], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "id_espiritu")
+  familia_espiritual familia_espiritual @relation(fields: [id_familia], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "id_familia")
+}
+
+model respuesta {
+  respuesta String? @db.VarChar
+  id        String  @id @db.VarChar
+}
+
+model usuario {
+  email              String               @unique(map: "email") @db.VarChar
+  password           String?              @db.VarChar
+  id                 String               @id @default(uuid())
+  familia_espiritual familia_espiritual[]
+  pregunta           pregunta[]
+}
+
+model moneda {
+  id          Int     @id
+  descripcion String? @db.VarChar
+}
+
+model respuesta_dia {
+  id        String  @id @db.VarChar
+  respuesta String? @db.VarChar
+}
+
+model respuesta_especial {
+  id        String  @id @db.VarChar
+  respuesta String? @db.VarChar
+}
