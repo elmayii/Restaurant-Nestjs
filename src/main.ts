@@ -13,6 +13,11 @@ async function bootstrap() {
       transform: true,
     }),
   );
+  app.enableCors({
+    origin: ['http://localhost:4321/', 'https://eons-main.vercel.app/'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
   await app.listen(3000);
 }
 bootstrap();
