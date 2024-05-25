@@ -10,6 +10,8 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from './auth.guard';
+import { ResetPasswordRequestDto } from './dto/reset-password-request.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -31,5 +33,16 @@ export class AuthController {
   @UseGuards(AuthGuard)
   profile(@Request() req) {
     return req.user;
+  }
+  @Post('request-password-reset')
+  requestPasswordReset(
+    @Body() resetPasswordRequestDto: ResetPasswordRequestDto,
+  ) {
+    return this.authService.requestPasswordReset(resetPasswordRequestDto);
+  }
+
+  @Post('reset-password')
+  resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    return this.authService.resetPassword(resetPasswordDto);
   }
 }

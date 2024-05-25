@@ -9,12 +9,16 @@ import { RegisterDto } from './dto/register.dto';
 import * as bcryptjs from 'bcryptjs';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ResetPasswordRequestDto } from './dto/reset-password-request.dto';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UsuariosService,
     private readonly jwtService: JwtService,
+    private readonly mailerService: MailerService,
   ) {}
   async register({ email, password }: RegisterDto) {
     const user = await this.userService.findOneByEmail(email);
@@ -65,5 +69,65 @@ export class AuthService {
       token,
       email,
     };
+  }
+  async requestPasswordReset({ email }: ResetPasswordRequestDto) {
+    const user = await this.userService.findOneByEmail(email);
+
+    if (!user) {
+      throw new BadRequestException('Email does not exist');
+    }
+
+    const token = await this.jwtService.signAsync(
+      { email },
+      { expiresIn: '1h' },
+    );
+
+    const resetUrl = `http://localhost:3000/reset-password?token=${token}`;
+
+    const htmlContent = `
+      <p>Hola ${user.email},</p>
+      <p>Recibimos una solicitud para restablecer tu contraseña. Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
+      <p><a href="${resetUrl}">Restablecer Contraseña</a></p>
+      <p>Si no solicitaste este cambio, puedes ignorar este correo electrónico.</p>
+      <p>Saludos,</p>
+      <p>Tu equipo</p>
+    `;
+
+    await this.mailerService.sendMail({
+      to: email,
+      subject: 'Password Reset Request',
+      html: htmlContent,
+      context: {
+        name: user.email,
+        resetUrl,
+      },
+    });
+
+    return { message: 'Password reset email sent' };
+  }
+
+  async resetPassword({ token, newPassword }: ResetPasswordDto) {
+    let email: string;
+
+    try {
+      const payload = await this.jwtService.verifyAsync(token);
+      email = payload.email;
+    } catch (e) {
+      throw new BadRequestException('Invalid or expired token');
+    }
+
+    const user = await this.userService.findOneByEmail(email);
+
+    if (!user) {
+      throw new BadRequestException('Email does not exist');
+    }
+
+    user.password = await bcryptjs.hash(newPassword, 10);
+    await this.userService.updateUsuario(
+      { password: user.password, email: user.email },
+      user.id,
+    );
+
+    return { message: 'Password successfully reset' };
   }
 }
