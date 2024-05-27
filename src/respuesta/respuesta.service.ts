@@ -134,6 +134,6 @@ export class RespuestasService {
   }
 
   async createRespuesta(data: respuesta): Promise<respuesta> {
-    return this.prisma.respuesta_especial.create({ data });
+    return this.prisma.respuesta.create({ data });
   }
 }

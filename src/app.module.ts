@@ -10,6 +10,8 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { GoogleModule } from './auth/google/google.module';
 import { MicrosoftModule } from './auth/microsoft/microsoft.module';
+import { RespuestaEspecialModule } from './respuesta_especial/respuesta_especial.module';
+import { RespuestaDiaModule } from './respuesta_dia/respuesta_dia.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { MicrosoftModule } from './auth/microsoft/microsoft.module';
     PreguntaModule,
     FamiliasEspiritusModule,
     RespuestaModule,
+    RespuestaEspecialModule,
+    RespuestaDiaModule,
     UsuarioModule,
     MonedaModule,
     AuthModule,
