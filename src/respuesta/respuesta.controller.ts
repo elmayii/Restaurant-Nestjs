@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   Param,
-  NotFoundException,
   UseGuards,
   Request,
   Query,
@@ -28,14 +27,30 @@ export class RespuestasController {
     @Request() req: Request,
     @Query() { type }: { type: string },
   ) {
+    if (id < '01' || id > '37') {
+      return {
+        statusCode: 400,
+        message: 'Lanzamiento no válido',
+      };
+    }
+
     const respuestaFound = await this.respuestasService.getRespuestaById(
       id,
       req.body,
       type,
     );
-    console.log(respuestaFound);
-    if (!respuestaFound) throw new NotFoundException('Vuelve a tirar');
-    return respuestaFound;
+
+    if (!respuestaFound) {
+      return {
+        statusCode: 200,
+        message: 'Vuelve a tirar',
+      };
+    }
+
+    return {
+      statusCode: 200,
+      data: respuestaFound,
+    };
   }
 
   @Post()
