@@ -6,9 +6,13 @@ import {
   UseGuards,
   Request,
   Query,
+  Post,
+  Body,
 } from '@nestjs/common';
 import { RespuestasService } from './respuesta.service';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { respuesta } from '@prisma/client';
+
 @Controller('respuestas')
 export class RespuestasController {
   constructor(private readonly respuestasService: RespuestasService) {}
@@ -32,5 +36,10 @@ export class RespuestasController {
     console.log(respuestaFound);
     if (!respuestaFound) throw new NotFoundException('Vuelve a tirar');
     return respuestaFound;
+  }
+
+  @Post()
+  async createRespuesta(@Body() data: respuesta) {
+    return this.respuestasService.createRespuesta(data);
   }
 }
