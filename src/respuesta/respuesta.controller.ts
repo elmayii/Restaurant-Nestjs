@@ -24,7 +24,7 @@ export class RespuestasController {
   @UseGuards(AuthGuard)
   async getRespuestaById(
     @Param() { id }: { id: string },
-    @Request() req: Request,
+    @Request() req: any,
     @Query() { type }: { type: string },
   ) {
     if (id < '01' || id > '37') {
@@ -36,7 +36,7 @@ export class RespuestasController {
 
     const respuestaFound = await this.respuestasService.getRespuestaById(
       id,
-      req.body,
+      req.user,
       type,
     );
 
@@ -54,7 +54,14 @@ export class RespuestasController {
   }
 
   @Post()
-  async createRespuesta(@Body() data: respuesta) {
+  @UseGuards(AuthGuard)
+  async createRespuesta(
+    @Body() data: respuesta,
+    @Query() { close }: { close: string },
+    @Request() req: Request,
+  ) {
+    if (close)
+      return this.respuestasService.closeDialog((req as any).user.email);
     return this.respuestasService.createRespuesta(data);
   }
 }

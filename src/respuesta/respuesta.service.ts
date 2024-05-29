@@ -61,27 +61,37 @@ export class RespuestasService {
     const user = await this.prisma.usuario.findFirst({
       where: { email: request.email },
     });
+    console.log(user, request.email);
+
     //Crear instancia si no existe
     if (!userThrows.throws[user.email]) {
+      console.log('creando instancia');
       userThrows.throws[user.email] = {
         currentThrow: 0,
         throws: [{ throw: '', special: false }],
       };
     }
 
+    console.log('ID QUE LLEGA: ', id);
+
     //Si es especial, crear nuevo lanzamiento
     if (specials.includes(id)) {
-      userThrows.throws[user.email] = {
-        throws: [
-          ...userThrows.throws[user.email].throws,
-          { throw: '', special: true },
-        ],
-        currentThrow: userThrows.throws[user.email].currentThrow + 1,
-      };
+      userThrows.throws[user.email].throws = [
+        ...userThrows.throws[user.email].throws,
+        { throw: id, special: true },
+      ];
+      console.log('nuevo lanzamiento creado por ser especial');
+      if (userThrows.throws[user.email].currentThrow === 0) {
+        console.log('me muevo al ultimo lanzamiento nuevo especial');
+        userThrows.throws[user.email].currentThrow =
+          userThrows.throws[user.email].throws.length - 1;
+      }
+    } else {
+      userThrows.throws[user.email].throws[
+        userThrows.throws[user.email].currentThrow
+      ].throw += id;
     }
-    userThrows.throws[user.email].throws[
-      userThrows.throws[user.email].currentThrow
-    ].throw += id;
+    console.log('Lo que tiene: ', userThrows.throws[user.email]);
 
     //Chequear respuesta
     let answer: respuesta_dia;
@@ -90,6 +100,12 @@ export class RespuestasService {
         userThrows.throws[user.email].currentThrow
       ].special
     ) {
+      console.log(
+        'BUscando',
+        userThrows.throws[user.email].throws[
+          userThrows.throws[user.email].currentThrow
+        ].throw,
+      );
       answer = await this.prisma.respuesta_especial.findFirst({
         where: {
           id: userThrows.throws[user.email].throws[
@@ -97,6 +113,7 @@ export class RespuestasService {
           ].throw,
         },
       });
+      console.log(answer);
     } else if (type === 'day') {
       answer = await this.prisma.respuesta_dia.findFirst({
         where: {
@@ -106,6 +123,12 @@ export class RespuestasService {
         },
       });
     } else {
+      console.log(
+        'id que busca: ',
+        userThrows.throws[user.email].throws[
+          userThrows.throws[user.email].currentThrow
+        ].throw,
+      );
       answer = await this.prisma.respuesta.findFirst({
         where: {
           id: userThrows.throws[user.email].throws[
@@ -116,17 +139,29 @@ export class RespuestasService {
     }
 
     if (answer) {
+      console.log('Respuesta encontrada', answer);
       userThrows.throws[user.email].throws[
         userThrows.throws[user.email].currentThrow
       ].throw = answer.respuesta;
-      if (userThrows.throws[user.email].currentThrow) {
-        userThrows.throws[user.email].currentThrow -= 1;
-      } else {
+      if (!userThrows.throws[user.email].currentThrow) {
+        console.log('Ya hay resultado');
         const result = userThrows.throws[user.email].throws.map(
           (answer) => answer.throw,
         );
+        console.log(result);
         userThrows.throws[user.email] = void 0;
         return result;
+      } else {
+        if (
+          userThrows.throws[user.email].throws.length - 1 >
+          userThrows.throws[user.email].currentThrow
+        ) {
+          console.log('avanzando de paso al proximo');
+          userThrows.throws[user.email].currentThrow += 1;
+        } else {
+          console.log('volvi al principio');
+          userThrows.throws[user.email].currentThrow = 0;
+        }
       }
     }
 
@@ -135,5 +170,12 @@ export class RespuestasService {
 
   async createRespuesta(data: respuesta): Promise<respuesta> {
     return this.prisma.respuesta.create({ data });
+  }
+
+  async closeDialog(email: string) {
+    const user = await this.prisma.usuario.findFirst({
+      where: { email },
+    });
+    return (userThrows.throws[user.email] = void 0);
   }
 }
