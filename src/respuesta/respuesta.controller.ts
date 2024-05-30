@@ -7,6 +7,7 @@ import {
   Query,
   Post,
   Body,
+  Delete,
 } from '@nestjs/common';
 import { RespuestasService } from './respuesta.service';
 import { AuthGuard } from 'src/auth/auth.guard';
@@ -63,5 +64,10 @@ export class RespuestasController {
     if (close)
       return this.respuestasService.closeDialog((req as any).user.email);
     return this.respuestasService.createRespuesta(data);
+  }
+
+  @Delete()
+  async deleteRespuesta() {
+    return this.respuestasService.deleteRespuesta();
   }
 }

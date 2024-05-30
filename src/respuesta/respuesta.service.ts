@@ -178,4 +178,8 @@ export class RespuestasService {
     });
     return (userThrows.throws[user.email] = void 0);
   }
+
+  async deleteRespuesta() {
+    this.prisma.respuesta.deleteMany();
+  }
 }

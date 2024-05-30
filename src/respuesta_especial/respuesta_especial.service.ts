@@ -13,4 +13,8 @@ export class RespuestasEspecialService {
   async createRespuesta(data: respuesta_especial): Promise<respuesta_especial> {
     return this.prisma.respuesta.create({ data });
   }
+
+  async deleteRespuesta() {
+    this.prisma.respuesta.deleteMany();
+  }
 }

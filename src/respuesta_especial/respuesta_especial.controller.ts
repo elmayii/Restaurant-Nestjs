@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Delete } from '@nestjs/common';
 import { RespuestasEspecialService } from './respuesta_especial.service';
 import { respuesta_especial } from '@prisma/client';
 
@@ -13,5 +13,10 @@ export class RespuestasEspecialController {
   @Post()
   async createRespuesta(@Body() data: respuesta_especial) {
     return this.respuestasService.createRespuesta(data);
+  }
+
+  @Delete()
+  async deleteRespuesta() {
+    return this.respuestasService.deleteRespuesta();
   }
 }
