@@ -180,6 +180,6 @@ export class RespuestasService {
   }
 
   async deleteRespuesta() {
-    this.prisma.respuesta.deleteMany();
+    return this.prisma.respuesta.deleteMany();
   }
 }
