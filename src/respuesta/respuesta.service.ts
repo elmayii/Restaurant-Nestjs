@@ -53,7 +53,7 @@ export class RespuestasService {
     id: string,
     request: any,
     type: string,
-  ): Promise<string[] | undefined> {
+  ): Promise<string[] | undefined | 'LIMIT_REACHED'> {
     if (!validTypes.includes(type)) {
       throw new Error('Invalid type');
     }
@@ -61,18 +61,24 @@ export class RespuestasService {
     const user = await this.prisma.usuario.findFirst({
       where: { email: request.email },
     });
-    console.log(user, request.email);
 
     //Crear instancia si no existe
     if (!userThrows.throws[user.email]) {
-      console.log('creando instancia');
       userThrows.throws[user.email] = {
         currentThrow: 0,
         throws: [{ throw: '', special: false }],
       };
     }
 
-    console.log('ID QUE LLEGA: ', id);
+    const userThrowData = userThrows.throws[user.email];
+    const specialThrowsCount = userThrowData.throws.filter(
+      (t) => t.special,
+    ).length;
+
+    // Verificar límite de lanzamientos especiales
+    if (specials.includes(id) && specialThrowsCount >= 4) {
+      return 'LIMIT_REACHED';
+    }
 
     //Si es especial, crear nuevo lanzamiento
     if (specials.includes(id)) {
@@ -80,9 +86,7 @@ export class RespuestasService {
         ...userThrows.throws[user.email].throws,
         { throw: id, special: true },
       ];
-      console.log('nuevo lanzamiento creado por ser especial');
       if (userThrows.throws[user.email].currentThrow === 0) {
-        console.log('me muevo al ultimo lanzamiento nuevo especial');
         userThrows.throws[user.email].currentThrow =
           userThrows.throws[user.email].throws.length - 1;
       }
@@ -91,7 +95,6 @@ export class RespuestasService {
         userThrows.throws[user.email].currentThrow
       ].throw += id;
     }
-    console.log('Lo que tiene: ', userThrows.throws[user.email]);
 
     //Chequear respuesta
     let answer: respuesta_dia;
@@ -100,12 +103,6 @@ export class RespuestasService {
         userThrows.throws[user.email].currentThrow
       ].special
     ) {
-      console.log(
-        'BUscando',
-        userThrows.throws[user.email].throws[
-          userThrows.throws[user.email].currentThrow
-        ].throw,
-      );
       answer = await this.prisma.respuesta_especial.findFirst({
         where: {
           id: userThrows.throws[user.email].throws[
@@ -113,7 +110,6 @@ export class RespuestasService {
           ].throw,
         },
       });
-      console.log(answer);
     } else if (type === 'day') {
       answer = await this.prisma.respuesta_dia.findFirst({
         where: {
@@ -123,12 +119,6 @@ export class RespuestasService {
         },
       });
     } else {
-      console.log(
-        'id que busca: ',
-        userThrows.throws[user.email].throws[
-          userThrows.throws[user.email].currentThrow
-        ].throw,
-      );
       answer = await this.prisma.respuesta.findFirst({
         where: {
           id: userThrows.throws[user.email].throws[
@@ -139,16 +129,13 @@ export class RespuestasService {
     }
 
     if (answer) {
-      console.log('Respuesta encontrada', answer);
       userThrows.throws[user.email].throws[
         userThrows.throws[user.email].currentThrow
       ].throw = answer.respuesta;
       if (!userThrows.throws[user.email].currentThrow) {
-        console.log('Ya hay resultado');
         const result = userThrows.throws[user.email].throws.map(
           (answer) => answer.throw,
         );
-        console.log(result);
         userThrows.throws[user.email] = void 0;
         return result;
       } else {
@@ -156,10 +143,8 @@ export class RespuestasService {
           userThrows.throws[user.email].throws.length - 1 >
           userThrows.throws[user.email].currentThrow
         ) {
-          console.log('avanzando de paso al proximo');
           userThrows.throws[user.email].currentThrow += 1;
         } else {
-          console.log('volvi al principio');
           userThrows.throws[user.email].currentThrow = 0;
         }
       }

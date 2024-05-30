@@ -41,6 +41,14 @@ export class RespuestasController {
       type,
     );
 
+    if (respuestaFound === 'LIMIT_REACHED') {
+      return {
+        statusCode: 400,
+        message:
+          'No puede hacer más lanzamientos especiales. Debe continuar con los lanzamientos normales.',
+      };
+    }
+
     if (!respuestaFound) {
       return {
         statusCode: 200,

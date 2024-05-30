@@ -15,6 +15,6 @@ export class RespuestasEspecialService {
   }
 
   async deleteRespuesta() {
-    return this.prisma.respuesta.deleteMany();
+    return this.prisma.respuesta_especial.deleteMany();
   }
 }
