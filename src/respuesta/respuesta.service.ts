@@ -53,7 +53,7 @@ export class RespuestasService {
     id: string,
     request: any,
     type: string,
-  ): Promise<string[] | undefined | 'LIMIT_REACHED'> {
+  ): Promise<string[] | undefined | string> {
     if (!validTypes.includes(type)) {
       throw new Error('Invalid type');
     }
@@ -133,9 +133,9 @@ export class RespuestasService {
         userThrows.throws[user.email].currentThrow
       ].throw = answer.respuesta;
       if (!userThrows.throws[user.email].currentThrow) {
-        const result = userThrows.throws[user.email].throws.map(
-          (answer) => answer.throw,
-        );
+        const result = userThrows.throws[user.email].throws
+          .map((answer) => answer.throw)
+          .join(';');
         userThrows.throws[user.email] = void 0;
         return result;
       } else {
