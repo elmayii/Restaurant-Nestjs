@@ -49,13 +49,21 @@ export class RespuestasController {
       };
     }
 
-    if (!respuestaFound) {
+    if (respuestaFound === 'Vuelve a tirar') {
       return {
         statusCode: 200,
         message: 'Vuelve a tirar',
       };
     }
-
+    if (
+      respuestaFound ===
+      'Vuelve a tirar para caracterizar el lanzamiento especial'
+    ) {
+      return {
+        statusCode: 200,
+        message: 'Vuelve a tirar para caracterizar el lanzamiento especial',
+      };
+    }
     return {
       statusCode: 200,
       data: respuestaFound,

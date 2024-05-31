@@ -148,9 +148,17 @@ export class RespuestasService {
           userThrows.throws[user.email].currentThrow = 0;
         }
       }
+    } else {
+      if (
+        userThrows.throws[user.email].throws[
+          userThrows.throws[user.email].currentThrow
+        ].special
+      ) {
+        return 'Vuelve a tirar para caracterizar el lanzamiento especial';
+      } else {
+        return 'Vuelve a tirar';
+      }
     }
-
-    return void 0;
   }
 
   async createRespuesta(data: respuesta): Promise<respuesta> {
