@@ -144,8 +144,10 @@ export class RespuestasService {
           userThrows.throws[user.email].currentThrow
         ) {
           userThrows.throws[user.email].currentThrow += 1;
+          return 'Vuelve a tirar para caracterizar el lanzamiento especial';
         } else {
           userThrows.throws[user.email].currentThrow = 0;
+          return 'Vuelve a tirar';
         }
       }
     } else {
