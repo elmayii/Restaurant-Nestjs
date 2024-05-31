@@ -88,7 +88,7 @@ async function main() {
       for (let j = 0; j < 4; j++) {
         for (let k = 0; k < 4; k++) {
           const id = `${valoresEspeciales[e]}${valoresNormales[i]}${valoresNormales[j]}${valoresNormales[k]}`;
-          const respuesta = `Primer lanzamiento: ${significadosEspeciales[valoresEspeciales[e]]}, segundo lanzamiento: ${significadosNormales[valoresNormales[i]]}, tercer lanzamiento: ${significadosNormales[valoresNormales[j]]}, cuarto lanzamiento: ${significadosNormales[valoresNormales[k]]}`;
+          const respuesta = `${significadosEspeciales[valoresEspeciales[e]]}, Primer lanzamiento: ${significadosNormales[valoresNormales[i]]}, segundo lanzamiento: ${significadosNormales[valoresNormales[j]]}, tercer lanzamiento: ${significadosNormales[valoresNormales[k]]}`;
 
           await prisma.respuesta_especial.create({
             data: {

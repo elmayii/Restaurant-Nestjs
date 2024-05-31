@@ -138,7 +138,7 @@ function main() {
                 case 4:
                     if (!(k < 4)) return [3 /*break*/, 7];
                     id = "".concat(valoresEspeciales[e]).concat(valoresNormales[i]).concat(valoresNormales[j]).concat(valoresNormales[k]);
-                    respuesta = "Primer lanzamiento: ".concat(significadosEspeciales[valoresEspeciales[e]], ", segundo lanzamiento: ").concat(significadosNormales[valoresNormales[i]], ", tercer lanzamiento: ").concat(significadosNormales[valoresNormales[j]], ", cuarto lanzamiento: ").concat(significadosNormales[valoresNormales[k]]);
+                    respuesta = "".concat(significadosEspeciales[valoresEspeciales[e]], ", Primer lanzamiento: ").concat(significadosNormales[valoresNormales[i]], ", segundo lanzamiento: ").concat(significadosNormales[valoresNormales[j]], ", tercer lanzamiento: ").concat(significadosNormales[valoresNormales[k]]);
                     return [4 /*yield*/, prisma.respuesta_especial.create({
                             data: {
                                 id: id,
