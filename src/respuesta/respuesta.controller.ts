@@ -12,10 +12,15 @@ import {
 import { RespuestasService } from './respuesta.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { respuesta } from '@prisma/client';
+import { TranslationService } from 'src/translation/translation.service';
 
 @Controller('respuestas')
 export class RespuestasController {
-  constructor(private readonly respuestasService: RespuestasService) {}
+  constructor(
+    private readonly respuestasService: RespuestasService,
+    private readonly translationService: TranslationService,
+  ) {}
+
   @Get()
   async getAllrespuestas() {
     return this.respuestasService.getAllRespuestas();
@@ -27,6 +32,7 @@ export class RespuestasController {
     @Param() { id }: { id: string },
     @Request() req: any,
     @Query() { type }: { type: string },
+    @Query() { lang }: { lang: string },
   ) {
     if (id < '01' || id > '37') {
       return {
@@ -64,6 +70,10 @@ export class RespuestasController {
         message: 'Vuelve a tirar para caracterizar el lanzamiento especial',
       };
     }
+    if (lang !== 'es') {
+      await this.translationService.translate();
+    }
+
     return {
       statusCode: 200,
       data: respuestaFound,

@@ -23,14 +23,26 @@ export class AuthService {
   async register({ email, password }: RegisterDto) {
     const user = await this.userService.findOneByEmail(email);
 
-    if (user) {
+    if (user && password) {
       throw new BadRequestException('User already exists');
     }
-    await this.userService.createUsuario({
-      email,
-      password: await bcryptjs.hash(password, 10),
-    });
-    return email;
+    if (password) {
+      await this.userService.createUsuario({
+        email,
+        password: await bcryptjs.hash(password, 10),
+      });
+      return email;
+    } else {
+      if (user) {
+        this.fastLogin({ email });
+      } else {
+        await this.userService.createUsuario({
+          email,
+          password: await bcryptjs.hash(process.env.SECRET),
+        });
+        this.fastLogin({ email });
+      }
+    }
   }
 
   async login({ email, password }: LoginDto) {
@@ -54,7 +66,7 @@ export class AuthService {
     };
   }
 
-  async Fastlogin({ email }: LoginDto) {
+  async fastLogin({ email }: LoginDto) {
     const user = await this.userService.findOneByEmail(email);
 
     if (!user) {

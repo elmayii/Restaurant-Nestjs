@@ -8,10 +8,9 @@ import { UsuarioModule } from './usuario/usuario.module';
 import { MonedaModule } from './moneda/moneda.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
-import { GoogleModule } from './auth/google/google.module';
-import { MicrosoftModule } from './auth/microsoft/microsoft.module';
 import { RespuestaEspecialModule } from './respuesta_especial/respuesta_especial.module';
 import { RespuestaDiaModule } from './respuesta_dia/respuesta_dia.module';
+import { TropipayModule } from './tropipay/tropipay.module';
 
 @Module({
   imports: [
@@ -26,8 +25,7 @@ import { RespuestaDiaModule } from './respuesta_dia/respuesta_dia.module';
     MonedaModule,
     AuthModule,
     ConfigModule.forRoot(),
-    GoogleModule,
-    MicrosoftModule,
+    TropipayModule,
   ],
   controllers: [],
   providers: [],

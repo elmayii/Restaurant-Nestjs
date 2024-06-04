@@ -53,7 +53,7 @@ export class RespuestasService {
     id: string,
     request: any,
     type: string,
-  ): Promise<string[] | undefined | string> {
+  ): Promise<string | undefined | string> {
     if (!validTypes.includes(type)) {
       throw new Error('Invalid type');
     }
