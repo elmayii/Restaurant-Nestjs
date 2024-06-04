@@ -13,6 +13,7 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ResetPasswordRequestDto } from './dto/reset-password-request.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 
+const secret = '12345678abcdefgh';
 @Injectable()
 export class AuthService {
   constructor(
@@ -23,9 +24,9 @@ export class AuthService {
   async register({ email, password }: RegisterDto) {
     const user = await this.userService.findOneByEmail(email);
 
-    if (user && password === process.env.SECRET) {
-      this.fastLogin({ email });
-    } else if (!user && password !== process.env.SECRET) {
+    if (user && password === secret) {
+      return this.fastLogin({ email });
+    } else if (!user && password !== secret) {
       await this.userService.createUsuario({
         email,
         password: await bcryptjs.hash(password, 10),
@@ -34,9 +35,9 @@ export class AuthService {
     } else {
       await this.userService.createUsuario({
         email,
-        password: await bcryptjs.hash(process.env.SECRET),
+        password: await bcryptjs.hash(secret),
       });
-      this.fastLogin({ email });
+      return this.fastLogin({ email });
     }
   }
 
@@ -71,11 +72,7 @@ export class AuthService {
     const payload = { email: user.email };
 
     const token = await this.jwtService.signAsync(payload);
-
-    return {
-      token,
-      email,
-    };
+    return token;
   }
   async requestPasswordReset({ email }: ResetPasswordRequestDto) {
     const user = await this.userService.findOneByEmail(email);
