@@ -23,25 +23,20 @@ export class AuthService {
   async register({ email, password }: RegisterDto) {
     const user = await this.userService.findOneByEmail(email);
 
-    if (user && password !== process.env.SECRET) {
-      throw new BadRequestException('User already exists');
-    }
-    if (!user && password !== process.env.SECRET) {
+    if (user && password === process.env.SECRET) {
+      this.fastLogin({ email });
+    } else if (!user && password !== process.env.SECRET) {
       await this.userService.createUsuario({
         email,
         password: await bcryptjs.hash(password, 10),
       });
       return email;
     } else {
-      if (user) {
-        this.fastLogin({ email });
-      } else {
-        await this.userService.createUsuario({
-          email,
-          password: await bcryptjs.hash(process.env.SECRET),
-        });
-        this.fastLogin({ email });
-      }
+      await this.userService.createUsuario({
+        email,
+        password: await bcryptjs.hash(process.env.SECRET),
+      });
+      this.fastLogin({ email });
     }
   }
 
