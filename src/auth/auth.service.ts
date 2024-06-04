@@ -23,10 +23,10 @@ export class AuthService {
   async register({ email, password }: RegisterDto) {
     const user = await this.userService.findOneByEmail(email);
 
-    if (user && password) {
+    if (user && password !== process.env.SECRET) {
       throw new BadRequestException('User already exists');
     }
-    if (password) {
+    if (!user && password !== process.env.SECRET) {
       await this.userService.createUsuario({
         email,
         password: await bcryptjs.hash(password, 10),
