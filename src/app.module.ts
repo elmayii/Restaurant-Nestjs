@@ -10,7 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { RespuestaEspecialModule } from './respuesta_especial/respuesta_especial.module';
 import { RespuestaDiaModule } from './respuesta_dia/respuesta_dia.module';
-import { TropipayModule } from './tropipay/tropipay.module';
+import { TropiPayModule } from './tropipay/tropipay.module';
 
 @Module({
   imports: [
@@ -25,7 +25,7 @@ import { TropipayModule } from './tropipay/tropipay.module';
     MonedaModule,
     AuthModule,
     ConfigModule.forRoot(),
-    TropipayModule,
+    TropiPayModule,
   ],
   controllers: [],
   providers: [],

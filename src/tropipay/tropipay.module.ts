@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
-import { TropipayService } from './tropipay.service';
-import { TropipayController } from './tropipay.controller';
+import { TropiPayService } from './tropipay.service';
+import { TropiPayController } from './tropipay.controller';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  controllers: [TropipayController],
-  providers: [TropipayService],
-  exports: [TropipayService],
+  providers: [TropiPayService],
+  controllers: [TropiPayController],
+  imports: [HttpModule],
 })
-export class TropipayModule {}
+export class TropiPayModule {}

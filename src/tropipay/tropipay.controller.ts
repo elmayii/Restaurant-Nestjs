@@ -1,18 +1,34 @@
-import { Controller, Get, Query } from '@nestjs/common';
-import { TropipayService } from './tropipay.service';
+import { Controller, Get, Param, Post } from '@nestjs/common';
+import { TropiPayService } from './tropipay.service';
 
 @Controller('tropipay')
-export class TropipayController {
-  constructor(private readonly tropipayService: TropipayService) {}
+export class TropiPayController {
+  constructor(private readonly tropiPayService: TropiPayService) {}
 
-  @Get()
-  async getPene(): Promise<string> {
-    return 'pene';
+  @Get('get')
+  async get() {
+    return await this.tropiPayService.getAccessToken();
   }
-  @Get('generate-link')
-  async generatePaymentLink(
-    @Query() { amount }: { amount: string },
-  ): Promise<string> {
-    return this.tropipayService.generatePaymentLink(amount);
+  @Post('create-payment-card/:id')
+  async createPaymentCard(@Param('id') id: string) {
+    return await this.tropiPayService.createPaymentCard({
+      reference: 'my-reference',
+      concept: 'Bicycle',
+      favorite: true,
+      description: 'Two wheels',
+      amount: id,
+      currency: 'USD',
+      singleUse: true,
+      reasonId: 4,
+      expirationDays: 1,
+      lang: 'es',
+      urlSuccess: 'https://my-business.com/payment-ok',
+      urlFailed: 'https://my-business.com/payment-ko',
+      urlNotification: 'https://my-business.com/payment-callback',
+      serviceDate: '2021-08-20',
+      client: null,
+      directPayment: true,
+      paymentMethods: ['EXT', 'TPP'],
+    });
   }
 }

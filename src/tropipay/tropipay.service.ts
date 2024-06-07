@@ -1,24 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { Tropipay } from '@yosle/tropipayjs';
+import { HttpService } from '@nestjs/axios';
+import { map } from 'rxjs/operators';
 
 @Injectable()
-export class TropipayService {
-  private tpp: Tropipay;
+export class TropiPayService {
+  constructor(private http: HttpService) {}
 
-  constructor() {
-    const config = {
-      clientId: process.env.TROPIPAY_CLIENT_ID,
-      clientSecret: process.env.TROPIPAY_CLIENT_SECRET,
+  async getAccessToken() {
+    const body = {
+      grant_type: 'client_credentials',
+      client_id: process.env.TROPIPAY_CLIENT_ID,
+      client_secret: process.env.TROPIPAY_CLIENT_SECRET,
     };
-    this.tpp = new Tropipay(config);
+    return await this.http
+      .post(process.env.GET_ACCESS_TOKEN, body)
+      .pipe(map((response) => response.data.access_token))
+      .toPromise();
   }
 
-  async generatePaymentLink(amount: string): Promise<string> {
+  async createPaymentCard(body: any) {
+    const accessToken = await this.getAccessToken();
+    const headers = {
+      Authorization: `Bearer ${accessToken}`,
+    };
     try {
-      return await this.tpp['generatePaymentLink'](amount);
+      const response = await this.http
+        .post(process.env.CREATE_PAYMENT_CARD, body, { headers })
+        .toPromise();
+      return response.data;
     } catch (error) {
-      console.error(error);
-      throw error;
+      console.error(error.response.data);
     }
   }
 }
