@@ -105,7 +105,7 @@ export class AuthService {
       },
     });
 
-    return { message: 'Password reset email sent' };
+    return { message: 'Password reset email sent', token: token };
   }
 
   async resetPassword({ token, newPassword }: ResetPasswordDto) {

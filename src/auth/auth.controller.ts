@@ -37,7 +37,6 @@ export class AuthController {
     return req.user;
   }
   @Post('request-password-reset')
-  @UseGuards(AuthGuard)
   requestPasswordReset(
     @Body() resetPasswordRequestDto: ResetPasswordRequestDto,
   ) {
