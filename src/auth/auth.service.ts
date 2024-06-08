@@ -29,7 +29,7 @@ export class AuthService {
         email,
         password: await bcryptjs.hash(password, 10),
       });
-      return email;
+      return this.sendVerificationEmail(email);
     } else {
       await this.userService.createUsuario({
         email,
@@ -131,5 +131,48 @@ export class AuthService {
     );
 
     return { message: 'Password successfully reset' };
+  }
+
+  async sendVerificationEmail(email: string) {
+    const token = await this.jwtService.signAsync(
+      { email },
+      { expiresIn: '1h' },
+    );
+    const resetUrl = `http://localhost:3000/auth/verify-email?token=${token}`;
+    const htmlContent = `
+      <p>Hola ${email},</p>
+      <p>Por favor verifica tu correo electrónico haciendo clic en el siguiente enlace:</p>
+      <p><a href="${resetUrl}">Verificar Email</a></p>
+      <p>Si no solicitaste este cambio, puedes ignorar este correo electrónico.</p>
+      <p>Saludos,</p>
+      <p>Tu equipo</p>
+    `;
+
+    await this.mailerService.sendMail({
+      to: email,
+      subject: 'Verifica tu correo electrónico',
+      html: htmlContent,
+      context: {
+        resetUrl,
+      },
+    });
+    return token;
+  }
+
+  async verifyEmail(token: string) {
+    try {
+      const payload = await this.jwtService.verifyAsync(token);
+      const email = payload.email;
+      const user = await this.userService.findOneByEmail(email);
+      if (user) {
+        user.isEmailVerified = true;
+        await this.userService.updateUsuario(user, user.id);
+        return { success: true };
+      } else {
+        throw new Error('Correo electrónico no encontrado');
+      }
+    } catch (error) {
+      throw new Error('Token inválido o expirado');
+    }
   }
 }
