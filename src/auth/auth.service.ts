@@ -84,7 +84,7 @@ export class AuthService {
       { expiresIn: '1h' },
     );
 
-    const resetUrl = `http://localhost:4321/auth/forget-password?token=${token}`;
+    const resetUrl = `http://localhost:4321/auth/change-password?token=${token}?email=${email}`;
 
     const htmlContent = `
       <p>Hola ${user.email},</p>
