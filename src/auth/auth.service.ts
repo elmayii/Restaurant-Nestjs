@@ -116,7 +116,7 @@ export class AuthService {
       { expiresIn: '1h' },
     );
 
-    const resetUrl = `http://localhost:4321/auth/change-password?token=${token}?email=${email}`;
+    const resetUrl = `http://localhost:4321/auth/change-password/${token}/${email}`;
 
     const htmlContent = `
       <p>Hola ${user.email},</p>
@@ -170,7 +170,7 @@ export class AuthService {
       { email },
       { expiresIn: '1h' },
     );
-    const resetUrl = `http://localhost:3000/auth/verify-email?token=${token}`;
+    const resetUrl = `http://localhost:3000/auth/verify-email/${token}`;
     const htmlContent = `
       <p>Hola ${email},</p>
       <p>Por favor verifica tu correo electrónico haciendo clic en el siguiente enlace:</p>
