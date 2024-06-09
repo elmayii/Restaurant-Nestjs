@@ -10,7 +10,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { RespuestasService } from './respuesta.service';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { AccessGuard } from 'src/auth/auth.guard';
 import { respuesta } from '@prisma/client';
 import { TranslationService } from 'src/translation/translation.service';
 
@@ -27,7 +27,7 @@ export class RespuestasController {
   }
 
   @Get(':id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AccessGuard)
   async getRespuestaById(
     @Param() { id }: { id: string },
     @Request() req: any,
@@ -81,7 +81,7 @@ export class RespuestasController {
   }
 
   @Post()
-  @UseGuards(AuthGuard)
+  @UseGuards(AccessGuard)
   async createRespuesta(
     @Body() data: respuesta,
     @Query() { close }: { close: string },

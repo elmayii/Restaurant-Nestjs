@@ -51,6 +51,7 @@ model usuario {
   familia_espiritual familia_espiritual[]
   pregunta           pregunta[]
   isEmailVerified   Boolean             @default(false)
+  type               String               @db.VarChar 
 }
 
 model moneda {

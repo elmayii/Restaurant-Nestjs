@@ -12,6 +12,8 @@ import { JwtService } from '@nestjs/jwt';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ResetPasswordRequestDto } from './dto/reset-password-request.dto';
 import { MailerService } from '@nestjs-modules/mailer';
+import { usuario } from '@prisma/client';
+import { jwtConstants } from './constants/jwt.constant';
 
 @Injectable()
 export class AuthService {
@@ -20,23 +22,53 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
   ) {}
+
   async register({ email, password }: RegisterDto) {
     const user = await this.userService.findOneByEmail(email);
-    if (user && password === process.env.SECRET) {
-      return this.fastLogin({ email });
-    } else if (!user && password !== process.env.SECRET) {
-      await this.userService.createUsuario({
-        email,
-        password: await bcryptjs.hash(password, 10),
-      });
-      return this.sendVerificationEmail(email);
-    } else {
-      await this.userService.createUsuario({
-        email,
-        password: await bcryptjs.hash(process.env.SECRET),
-      });
-      return this.fastLogin({ email });
+
+    if (user) {
+      return this.sendUser(user);
     }
+
+    await this.userService.createUsuario({
+      email,
+      password: await bcryptjs.hash(password, 10),
+      type: 'mail',
+    });
+
+    return this.sendUser(user);
+  }
+
+  async google({ email, password }: RegisterDto) {
+    const user = await this.userService.findOneByEmail(email);
+
+    if (user) {
+      return this.sendUser(user);
+    }
+
+    await this.userService.createUsuario({
+      email,
+      password: await bcryptjs.hash(password, 10),
+      type: 'google',
+    });
+
+    return this.sendUser(user);
+  }
+
+  async microsoft({ email, password }: RegisterDto) {
+    const user = await this.userService.findOneByEmail(email);
+
+    if (user) {
+      return this.sendUser(user);
+    }
+
+    await this.userService.createUsuario({
+      email,
+      password: await bcryptjs.hash(password, 10),
+      type: 'microsoft',
+    });
+
+    return this.sendUser(user);
   }
 
   async login({ email, password }: LoginDto) {
@@ -50,28 +82,28 @@ export class AuthService {
       throw new UnauthorizedException('password is wrong');
     }
 
-    const payload = { email: user.email };
+    return this.sendUser(user);
+  }
 
-    const token = await this.jwtService.signAsync(payload);
+  private async sendUser(user: usuario) {
+    const payload = { id: user.id };
+
+    const refreshToken = await this.jwtService.signAsync(payload, {
+      expiresIn: '7d',
+      secret: jwtConstants.refreshSecret,
+    });
+    const accessToken = await this.jwtService.signAsync(payload, {
+      expiresIn: '4h',
+      secret: jwtConstants.accessSecret,
+    });
 
     return {
-      token,
-      email,
+      refreshToken,
+      accessToken,
+      email: user.email,
     };
   }
 
-  async fastLogin({ email }: LoginDto) {
-    const user = await this.userService.findOneByEmail(email);
-
-    if (!user) {
-      throw new UnauthorizedException('email is wrong');
-    }
-
-    const payload = { email: user.email };
-
-    const token = await this.jwtService.signAsync(payload);
-    return token;
-  }
   async requestPasswordReset({ email }: ResetPasswordRequestDto) {
     const user = await this.userService.findOneByEmail(email);
 
@@ -126,7 +158,7 @@ export class AuthService {
 
     user.password = await bcryptjs.hash(newPassword, 10);
     await this.userService.updateUsuario(
-      { password: user.password, email: user.email },
+      { password: user.password, email: user.email, type: user.type },
       user.id,
     );
 

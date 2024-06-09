@@ -1,3 +1,4 @@
 export const jwtConstants = {
-  secret: 'VARIABLE DE ENTORNO',
+  accessSecret: 'VARIABLE DE ENTORNO',
+  refreshSecret: 'asdasdasdasdas',
 };

@@ -8,7 +8,7 @@ import { Request } from 'express';
 import { jwtConstants } from './constants/jwt.constant';
 import { JwtService } from '@nestjs/jwt';
 @Injectable()
-export class AccessGuard implements CanActivate {
+export class RefreshGuard implements CanActivate {
   constructor(private readonly jwtService: JwtService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -21,7 +21,7 @@ export class AccessGuard implements CanActivate {
 
     try {
       const payload = await this.jwtService.verifyAsync(token, {
-        secret: jwtConstants.accessSecret,
+        secret: jwtConstants.refreshSecret,
       });
 
       request.user = payload;
