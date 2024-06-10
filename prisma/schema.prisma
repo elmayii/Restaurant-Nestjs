@@ -13,12 +13,15 @@ model espiritu {
   nombre                    String?                     @db.VarChar
   descripcion               String?                     @db.VarChar
   foto                      String?                     @db.VarChar
+  familia_espiritual        familia_espiritual[]
   relacion_familia_espiritu relacion_familia_espiritu[]
 }
 
 model familia_espiritual {
   id                        Int                         @id
   id_usuario                String
+  id_espiritu               Int
+  espiritu                  espiritu                    @relation(fields: [id_espiritu], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "id_espiritu")
   usuario                   usuario                     @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "id_usuario")
   relacion_familia_espiritu relacion_familia_espiritu[]
 }
@@ -48,10 +51,10 @@ model usuario {
   email              String               @unique(map: "email") @db.VarChar
   password           String?              @db.VarChar
   id                 String               @id @default(uuid())
+  isEmailVerified    Boolean              @default(false)
+  type               String               @db.VarChar
   familia_espiritual familia_espiritual[]
   pregunta           pregunta[]
-  isEmailVerified   Boolean             @default(false)
-  type               String               @db.VarChar 
 }
 
 model moneda {
