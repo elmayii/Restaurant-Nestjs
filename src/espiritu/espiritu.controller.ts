@@ -8,9 +8,12 @@ import {
   Post,
   NotFoundException,
   BadRequestException,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { EspiritusService } from './espiritu.service';
 import { espiritu } from '@prisma/client';
+import { AccessGuard } from 'src/auth/auth.guard';
 @Controller('espiritus')
 export class EspiritusController {
   constructor(private readonly espiritusService: EspiritusService) {}
@@ -20,8 +23,17 @@ export class EspiritusController {
   }
 
   @Post()
-  async createEspiritu(@Body() data: espiritu) {
-    return this.espiritusService.createEspiritu(data);
+  @UseGuards(AccessGuard)
+  async createEspiritu(@Body() data: espiritu, @Request() req: any) {
+    const date = new Date();
+    const formattedDate = date.toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+    const descripcion_sistema = `Este espíritu se creó por usted el ${formattedDate}`;
+    data.descripcion_sistema = descripcion_sistema;
+    return this.espiritusService.createEspiritu(data, req.user);
   }
 
   @Get(':id')

@@ -9,37 +9,21 @@ datasource db {
 }
 
 model espiritu {
-  id                        Int                         @id
-  nombre                    String?                     @db.VarChar
-  descripcion               String?                     @db.VarChar
-  foto                      String?                     @db.VarChar
-  familia_espiritual        familia_espiritual[]
-  relacion_familia_espiritu relacion_familia_espiritu[]
-}
-
-model familia_espiritual {
-  id                        Int                         @id
-  id_usuario                String
-  id_espiritu               Int
-  espiritu                  espiritu                    @relation(fields: [id_espiritu], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "id_espiritu")
-  usuario                   usuario                     @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "id_usuario")
-  relacion_familia_espiritu relacion_familia_espiritu[]
+  id                  Int      @id @default(autoincrement())
+  nombre              String?  @db.VarChar
+  descripcion         String?  @db.VarChar
+  foto                String?  @db.VarChar
+  id_usuario          String?
+  descripcion_sistema String?  @db.VarChar
+  usuario             usuario? @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "id_usuario")
 }
 
 model pregunta {
-  id          Int      @id
+  id          Int      @id 
   descripcion String?  @db.VarChar
   respuesta   String?  @db.VarChar
   id_usuario  String?
   usuario     usuario? @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "id_usuario")
-}
-
-model relacion_familia_espiritu {
-  id                 Int                @id
-  id_espiritu        Int
-  id_familia         Int
-  espiritu           espiritu           @relation(fields: [id_espiritu], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "id_espiritu")
-  familia_espiritual familia_espiritual @relation(fields: [id_familia], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "id_familia")
 }
 
 model respuesta {
@@ -48,13 +32,13 @@ model respuesta {
 }
 
 model usuario {
-  email              String               @unique(map: "email") @db.VarChar
-  password           String?              @db.VarChar
-  id                 String               @id @default(uuid())
-  isEmailVerified    Boolean              @default(false)
-  type               String               @db.VarChar
-  familia_espiritual familia_espiritual[]
-  pregunta           pregunta[]
+  email           String     @unique(map: "email") @db.VarChar
+  password        String?    @db.VarChar
+  id              String     @id @default(uuid())
+  isEmailVerified Boolean    @default(false)
+  type            String     @db.VarChar
+  espiritu        espiritu[]
+  pregunta        pregunta[]
 }
 
 model moneda {
