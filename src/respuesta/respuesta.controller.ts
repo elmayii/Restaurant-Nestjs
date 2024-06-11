@@ -32,7 +32,6 @@ export class RespuestasController {
     @Param() { id }: { id: string },
     @Request() req: any,
     @Query() { type }: { type: string },
-    @Query() { lang }: { lang: string },
   ) {
     if (id < '01' || id > '37') {
       return {
@@ -69,9 +68,6 @@ export class RespuestasController {
         statusCode: 200,
         message: 'Vuelve a tirar para caracterizar el lanzamiento especial',
       };
-    }
-    if (lang !== 'es') {
-      await this.translationService.translate();
     }
 
     return {

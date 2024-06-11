@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { respuesta, respuesta_dia } from '@prisma/client';
+import { espiritu, respuesta, respuesta_dia } from '@prisma/client';
+import { EspiritusService } from 'src/espiritu/espiritu.service';
 import { userThrows } from 'src/lanzamientos/lanzamiento';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -39,11 +40,16 @@ const specials = [
   '37',
 ];
 
+const parados = ['21', '22', '23', '24'];
+
 const validTypes = ['day', 'dialog'];
 
 @Injectable()
 export class RespuestasService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private espiritu: EspiritusService,
+  ) {}
 
   async getAllRespuestas(): Promise<respuesta[]> {
     return this.prisma.respuesta.findMany();
@@ -78,6 +84,25 @@ export class RespuestasService {
     // Verificar límite de lanzamientos especiales
     if (specials.includes(id) && specialThrowsCount >= 4) {
       return 'LIMIT_REACHED';
+    }
+
+    if (parados.includes(id)) {
+      const date = new Date();
+      const formattedDateTime = date.toLocaleString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      });
+
+      this.espiritu.createEspiritu(
+        {
+          descripcion_sistema: `Este espíritu se creó a través de un lanzamiento especial el ${formattedDateTime}`,
+        } as espiritu,
+        request,
+      );
     }
 
     //Si es especial, crear nuevo lanzamiento
@@ -126,6 +151,11 @@ export class RespuestasService {
           ].throw,
         },
       });
+      console.log(
+        userThrows.throws[user.email].throws[
+          userThrows.throws[user.email].currentThrow
+        ].throw,
+      );
     }
 
     if (answer) {

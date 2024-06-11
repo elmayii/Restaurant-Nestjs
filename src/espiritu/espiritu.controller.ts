@@ -26,12 +26,15 @@ export class EspiritusController {
   @UseGuards(AccessGuard)
   async createEspiritu(@Body() data: espiritu, @Request() req: any) {
     const date = new Date();
-    const formattedDate = date.toLocaleDateString('es-ES', {
+    const formattedDateTime = date.toLocaleString('es-ES', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
     });
-    const descripcion_sistema = `Este espíritu se creó por usted el ${formattedDate}`;
+    const descripcion_sistema = `Este espíritu se creó por usted el ${formattedDateTime}`;
     data.descripcion_sistema = descripcion_sistema;
     return this.espiritusService.createEspiritu(data, req.user);
   }

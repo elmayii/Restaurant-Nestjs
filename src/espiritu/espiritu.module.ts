@@ -7,5 +7,6 @@ import { PrismaModule } from 'src/prisma/prisma.module';
   controllers: [EspiritusController],
   providers: [EspiritusService],
   imports: [PrismaModule],
+  exports: [EspiritusService],
 })
 export class EspirituModule {}
