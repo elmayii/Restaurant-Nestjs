@@ -19,7 +19,7 @@ model espiritu {
 }
 
 model pregunta {
-  id          Int      @id 
+  id          Int      @id
   descripcion String?  @db.VarChar
   respuesta   String?  @db.VarChar
   id_usuario  String?
@@ -54,4 +54,10 @@ model respuesta_dia {
 model respuesta_especial {
   id        String  @id @db.VarChar
   respuesta String? @db.VarChar
+}
+
+model esencia {
+  id          Int     @id @default(autoincrement())
+  precio      String? @db.VarChar
+  descripcion String? @db.VarChar
 }

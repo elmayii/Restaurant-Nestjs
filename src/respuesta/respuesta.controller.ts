@@ -32,42 +32,83 @@ export class RespuestasController {
     @Param() { id }: { id: string },
     @Request() req: any,
     @Query() { type }: { type: string },
+    @Query() { lang }: { lang: string },
   ) {
     if (id < '01' || id > '37') {
+      let message = 'Lanzamiento no válido';
+      if (lang !== 'es') {
+        message = await this.translationService.translateText(
+          message,
+          'es',
+          lang,
+        );
+      }
       return {
         statusCode: 400,
-        message: 'Lanzamiento no válido',
+        message: message,
       };
     }
 
-    const respuestaFound = await this.respuestasService.getRespuestaById(
+    let respuestaFound = await this.respuestasService.getRespuestaById(
       id,
       req.user,
       type,
     );
 
     if (respuestaFound === 'LIMIT_REACHED') {
+      let message =
+        'No puede hacer más lanzamientos especiales. Debe continuar con los lanzamientos normales.';
+      if (lang !== 'es') {
+        message = await this.translationService.translateText(
+          message,
+          'es',
+          lang,
+        );
+      }
       return {
         statusCode: 400,
-        message:
-          'No puede hacer más lanzamientos especiales. Debe continuar con los lanzamientos normales.',
+        message: message,
       };
     }
 
     if (respuestaFound === 'Vuelve a tirar') {
+      let message = 'Vuelve a tirar';
+      if (lang !== 'es') {
+        message = await this.translationService.translateText(
+          message,
+          'es',
+          lang,
+        );
+      }
       return {
         statusCode: 200,
-        message: 'Vuelve a tirar',
+        message: message,
       };
     }
     if (
       respuestaFound ===
       'Vuelve a tirar para caracterizar el lanzamiento especial'
     ) {
+      let message = 'Vuelve a tirar para caracterizar el lanzamiento especial';
+      if (lang !== 'es') {
+        message = await this.translationService.translateText(
+          message,
+          'es',
+          lang,
+        );
+      }
       return {
         statusCode: 200,
-        message: 'Vuelve a tirar para caracterizar el lanzamiento especial',
+        message: message,
       };
+    }
+
+    if (lang !== 'es') {
+      respuestaFound = await this.translationService.translateText(
+        respuestaFound,
+        'es',
+        lang,
+      );
     }
 
     return {
