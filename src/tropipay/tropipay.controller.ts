@@ -1,12 +1,15 @@
-import { Controller, Get, Param, Post } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body } from '@nestjs/common';
 import { TropiPayService } from './tropipay.service';
 import { EsenciasService } from 'src/esencia/esencia.service';
+import { sha256 } from 'js-sha256';
+import { UsuariosService } from 'src/usuario/usuario.service';
 
 @Controller('tropipay')
 export class TropiPayController {
   constructor(
     private readonly tropiPayService: TropiPayService,
     private readonly esenciaService: EsenciasService,
+    private readonly usuarioService: UsuariosService,
   ) {}
 
   @Get('get')
@@ -44,5 +47,36 @@ export class TropiPayController {
       directPayment: true,
       paymentMethods: ['EXT', 'TPP'],
     });
+  }
+  @Post()
+  async validateSignature(@Body() data) {
+    console.log(data.data.charges[0].clientEmail);
+    const { bankOrderCode, originalCurrencyAmount, signaturev2 } = data.data;
+    const clientId = process.env.TROPIPAY_CLIENT_ID;
+    const clientSecret = process.env.TROPIPAY_CLIENT_SECRET;
+
+    const messageToSign = `${bankOrderCode}${clientId}${clientSecret}${originalCurrencyAmount}`;
+
+    const expectedSignature = sha256(messageToSign);
+
+    if (expectedSignature === signaturev2) {
+      let epay = 0;
+      if (data.data.charges[0].amount === 199) {
+        epay = 15;
+      } else if (data.data.charges[0].amount === 399) {
+        epay = 40;
+      } else if (data.data.charges[0].amount === 799) {
+        epay = 100;
+      } else {
+        epay = 240;
+      }
+      const user = this.usuarioService.findOneByEmail(
+        data.data.charges[0].clientEmail,
+      );
+      (await user).esencia = (await user).esencia + epay;
+      this.usuarioService.updateUsuario(await user, (await user).id);
+    } else {
+      console.log('Firma no válida');
+    }
   }
 }

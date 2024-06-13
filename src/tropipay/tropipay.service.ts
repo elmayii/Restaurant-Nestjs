@@ -20,6 +20,7 @@ export class TropiPayService {
 
   async createPaymentCard(body: any) {
     const accessToken = await this.getAccessToken();
+    console.log(accessToken);
     const headers = {
       Authorization: `Bearer ${accessToken}`,
     };
