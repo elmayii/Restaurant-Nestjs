@@ -30,6 +30,9 @@ export class RespuestasController {
   @UseGuards(AccessGuard)
   async getRespuestaById(
     @Param() { id }: { id: string },
+    @Param() { action }: { action: string | null | undefined },
+    @Param() { param1 }: { param1: number | null | undefined },
+    @Param() { param2 }: { param2: string | null | undefined },
     @Request() req: any,
     @Query() { type }: { type: string },
     @Query() { lang }: { lang: string },
@@ -53,6 +56,9 @@ export class RespuestasController {
       id,
       req.user,
       type,
+      action,
+      param1,
+      param2,
     );
 
     if (respuestaFound === 'LIMIT_REACHED') {

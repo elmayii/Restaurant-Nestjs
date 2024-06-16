@@ -62,3 +62,8 @@ model esencia {
   precio      String? @db.VarChar
   descripcion String? @db.VarChar
 }
+
+model respuesta_predialogo {
+  respuesta String? @db.VarChar
+  id        String  @id @db.VarChar
+}
