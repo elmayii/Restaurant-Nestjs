@@ -9,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import { RespuestaEspecialModule } from './respuesta_especial/respuesta_especial.module';
 import { RespuestaDiaModule } from './respuesta_dia/respuesta_dia.module';
 import { TropiPayModule } from './tropipay/tropipay.module';
+import { RespuestaPredialogoModule } from './respuesta_predialogo/respuesta_predialogo.module';
 
 @Module({
   imports: [
@@ -22,8 +23,7 @@ import { TropiPayModule } from './tropipay/tropipay.module';
     AuthModule,
     ConfigModule.forRoot(),
     TropiPayModule,
+    RespuestaPredialogoModule,
   ],
-  controllers: [],
-  providers: [],
 })
 export class AppModule {}

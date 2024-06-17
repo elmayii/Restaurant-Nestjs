@@ -40,9 +40,24 @@ const specials = [
   '37',
 ];
 
+const actions = [
+  //eliminar espiritu
+  '01',
+  //editar foto espiritu
+  '02',
+  //editar nombre espiritu
+  '03',
+  //editar descripcion espiritu
+  '04',
+  //dialogar con espiritu
+  '05',
+  //estudiar espiritu
+  '06',
+];
+
 const parados = ['21', '22', '23', '24'];
 
-const validTypes = ['day', 'dialog'];
+const validTypes = ['day', 'dialog', 'predialog'];
 
 @Injectable()
 export class RespuestasService {
@@ -59,6 +74,9 @@ export class RespuestasService {
     id: string,
     request: any,
     type: string,
+    action: string | null | undefined,
+    param1: number | null | undefined,
+    param2: string | null | undefined,
   ): Promise<string | undefined | string> {
     if (!validTypes.includes(type)) {
       throw new Error('Invalid type');
@@ -67,7 +85,6 @@ export class RespuestasService {
     const user = await this.prisma.usuario.findFirst({
       where: { email: request.email },
     });
-
     //Crear instancia si no existe
     if (!userThrows.throws[user.email]) {
       userThrows.throws[user.email] = {
@@ -143,6 +160,44 @@ export class RespuestasService {
           ].throw,
         },
       });
+    } else if (type === 'predialogo' && action) {
+      answer = await this.prisma.respuesta_predialogo.findFirst({
+        where: {
+          id: userThrows.throws[user.email].throws[
+            userThrows.throws[user.email].currentThrow
+          ].throw,
+        },
+      });
+
+      if (!answer.respuesta.includes('04') && actions.includes(action)) {
+        if (action == '01') {
+          await this.espiritu.deleteEspiritu(param1);
+        } else if (action == '02') {
+          await this.espiritu.updateEspiritu(
+            {
+              ...(await this.espiritu.getEspirituById(param1)),
+              foto: param2,
+            },
+            param1,
+          );
+        } else if (action == '03') {
+          await this.espiritu.updateEspiritu(
+            {
+              ...(await this.espiritu.getEspirituById(param1)),
+              nombre: param2,
+            },
+            param1,
+          );
+        } else if (action == '04') {
+          await this.espiritu.updateEspiritu(
+            {
+              ...(await this.espiritu.getEspirituById(param1)),
+              descripcion: param2,
+            },
+            param1,
+          );
+        }
+      }
     } else {
       answer = await this.prisma.respuesta.findFirst({
         where: {
