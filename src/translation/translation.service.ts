@@ -19,11 +19,6 @@ export class TranslationService {
     try {
       const response = await axios.post(url, payload);
       const translatedText = response.data.data.translations[0].translatedText;
-      console.log(response.data);
-      console.log(response.data.data);
-      console.log(response.data.data);
-      console.log(response.data.data.translations[0]);
-      console.log(response.data.data.translations[0].translatedText);
       return translatedText;
     } catch (error) {
       console.log('Error: ', error);
