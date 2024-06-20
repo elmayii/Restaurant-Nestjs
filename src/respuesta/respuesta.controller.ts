@@ -30,9 +30,9 @@ export class RespuestasController {
   @UseGuards(AccessGuard)
   async getRespuestaById(
     @Param() { id }: { id: string },
-    @Param() { action }: { action: string | null | undefined },
-    @Param() { param1 }: { param1: number | null | undefined },
-    @Param() { param2 }: { param2: string | null | undefined },
+    @Query() { action }: { action: string | null | undefined },
+    @Query() { param1 }: { param1: number | null | undefined },
+    @Query() { param2 }: { param2: string | null | undefined },
     @Request() req: any,
     @Query() { type }: { type: string },
     @Query() { lang }: { lang: string },
