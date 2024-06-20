@@ -67,7 +67,7 @@ export class RespuestasService {
   ) {}
 
   async getAllRespuestas(): Promise<respuesta[]> {
-    return this.prisma.respuesta.findMany();
+    return this.prisma.respuesta_predialogo.findMany();
   }
 
   async getRespuestaById(
@@ -81,6 +81,9 @@ export class RespuestasService {
     if (!validTypes.includes(type)) {
       throw new Error('Invalid type');
     }
+
+    console.log(action)
+    console.log(param1)
     //Obtener usuario
     const user = await this.prisma.usuario.findFirst({
       where: { email: request.email },
@@ -140,6 +143,7 @@ export class RespuestasService {
 
     //Chequear respuesta
     let answer: respuesta_dia;
+
     if (
       userThrows.throws[user.email].throws[
         userThrows.throws[user.email].currentThrow
@@ -160,7 +164,7 @@ export class RespuestasService {
           ].throw,
         },
       });
-    } else if (type === 'predialogo' && action) {
+    } else if (type === 'predialog' && action) {
       answer = await this.prisma.respuesta_predialogo.findFirst({
         where: {
           id: userThrows.throws[user.email].throws[
@@ -168,11 +172,12 @@ export class RespuestasService {
           ].throw,
         },
       });
-
-      if (!answer.respuesta.includes('04') && actions.includes(action)) {
-        if (action == '01') {
-          await this.espiritu.deleteEspiritu(param1);
-        } else if (action == '02') {
+      console.log('action:',action)
+      if (answer && !(answer?.respuesta?.includes('04')) && actions.includes(action)) {
+        if (action == '01' && param1) {
+          console.log('elim')
+          await this.espiritu.deleteEspiritu(Number(param1));
+        } else if (action == '02' && param1 && param2) {
           await this.espiritu.updateEspiritu(
             {
               ...(await this.espiritu.getEspirituById(param1)),
@@ -180,7 +185,7 @@ export class RespuestasService {
             },
             param1,
           );
-        } else if (action == '03') {
+        } else if (action == '03' && param1 && param2) {
           await this.espiritu.updateEspiritu(
             {
               ...(await this.espiritu.getEspirituById(param1)),
@@ -188,7 +193,7 @@ export class RespuestasService {
             },
             param1,
           );
-        } else if (action == '04') {
+        } else if (action == '04' && param1 && param2) {
           await this.espiritu.updateEspiritu(
             {
               ...(await this.espiritu.getEspirituById(param1)),
