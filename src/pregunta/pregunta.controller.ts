@@ -8,6 +8,7 @@ import {
   Post,
   NotFoundException,
   BadRequestException,
+  Request,
 } from '@nestjs/common';
 import { PreguntasService } from './pregunta.service';
 import { pregunta } from '@prisma/client';
@@ -20,8 +21,8 @@ export class PreguntasController {
   }
 
   @Post()
-  async createPregunta(@Body() data: pregunta) {
-    return this.preguntasService.createPregunta(data);
+  async createPregunta(@Body() data: pregunta, @Request() req: any) {
+    return this.preguntasService.createPregunta(data, req.user);
   }
 
   @Get(':id')

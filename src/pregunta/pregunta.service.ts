@@ -14,8 +14,35 @@ export class PreguntasService {
     return this.prisma.pregunta.findUnique({ where: { id } });
   }
 
-  async createPregunta(data: pregunta): Promise<pregunta> {
-    return this.prisma.pregunta.create({ data });
+  async createPregunta(data: pregunta, request: any): Promise<pregunta> {
+    const user = await this.prisma.usuario.findFirst({
+      where: { email: request.email },
+    });
+    if (data.tipo === 'dialog') {
+      return this.prisma.pregunta.create({
+        data: {
+          ...data,
+          id_usuario: user.id,
+        },
+      });
+    } else if (data.tipo === 'day') {
+      const date = new Date();
+      const formattedDateTime = date.toLocaleString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      });
+      return this.prisma.pregunta.create({
+        data: {
+          ...data,
+          id_usuario: user.id,
+          fecha: formattedDateTime,
+        },
+      });
+    }
   }
 
   async updatePregunta(data: pregunta, id: number): Promise<pregunta> {

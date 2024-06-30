@@ -10,6 +10,7 @@ import { RespuestaEspecialModule } from './respuesta_especial/respuesta_especial
 import { RespuestaDiaModule } from './respuesta_dia/respuesta_dia.module';
 import { TropiPayModule } from './tropipay/tropipay.module';
 import { RespuestaPredialogoModule } from './respuesta_predialogo/respuesta_predialogo.module';
+import { EvaluacionGeneralModule } from './evaluacion_general/evaluacion_general.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { RespuestaPredialogoModule } from './respuesta_predialogo/respuesta_pred
     ConfigModule.forRoot(),
     TropiPayModule,
     RespuestaPredialogoModule,
+    EvaluacionGeneralModule,
   ],
 })
 export class AppModule {}

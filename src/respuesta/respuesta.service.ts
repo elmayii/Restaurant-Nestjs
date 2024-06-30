@@ -2,62 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { espiritu, respuesta, respuesta_dia } from '@prisma/client';
 import { EspiritusService } from 'src/espiritu/espiritu.service';
 import { userThrows } from 'src/lanzamientos/lanzamiento';
+import { actions, parados, specials, validTypes } from 'src/lib/constants';
 import { PrismaService } from 'src/prisma/prisma.service';
-
-const specials = [
-  '05',
-  '06',
-  '07',
-  '08',
-  '09',
-  '10',
-  '11',
-  '12',
-  '13',
-  '14',
-  '15',
-  '16',
-  '17',
-  '18',
-  '19',
-  '20',
-  '21',
-  '22',
-  '23',
-  '24',
-  '25',
-  '26',
-  '27',
-  '28',
-  '29',
-  '30',
-  '31',
-  '32',
-  '33',
-  '34',
-  '35',
-  '36',
-  '37',
-];
-
-const actions = [
-  //eliminar espiritu
-  '01',
-  //editar foto espiritu
-  '02',
-  //editar nombre espiritu
-  '03',
-  //editar descripcion espiritu
-  '04',
-  //dialogar con espiritu
-  '05',
-  //estudiar espiritu
-  '06',
-];
-
-const parados = ['21', '22', '23', '24'];
-
-const validTypes = ['day', 'dialog', 'predialog'];
 
 @Injectable()
 export class RespuestasService {
@@ -72,7 +18,7 @@ export class RespuestasService {
 
   async getRespuestaById(
     id: string,
-    request: any,
+    userId: string,
     type: string,
     action: string | null | undefined,
     param1: number | null | undefined,
@@ -82,11 +28,9 @@ export class RespuestasService {
       throw new Error('Invalid type');
     }
 
-    console.log(action)
-    console.log(param1)
     //Obtener usuario
     const user = await this.prisma.usuario.findFirst({
-      where: { email: request.email },
+      where: { id: userId },
     });
     //Crear instancia si no existe
     if (!userThrows.throws[user.email]) {
@@ -121,7 +65,7 @@ export class RespuestasService {
         {
           descripcion_sistema: `Este espíritu se creó a través de un lanzamiento especial el ${formattedDateTime}`,
         } as espiritu,
-        request,
+        userId,
       );
     }
 
@@ -172,10 +116,14 @@ export class RespuestasService {
           ].throw,
         },
       });
-      console.log('action:',action)
-      if (answer && !(answer?.respuesta?.includes('04')) && actions.includes(action)) {
+      console.log('action:', action);
+      if (
+        answer &&
+        !answer?.respuesta?.includes('04') &&
+        actions.includes(action)
+      ) {
         if (action == '01' && param1) {
-          console.log('elim')
+          console.log('elim');
           await this.espiritu.deleteEspiritu(Number(param1));
         } else if (action == '02' && param1 && param2) {
           await this.espiritu.updateEspiritu(

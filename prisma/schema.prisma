@@ -19,11 +19,13 @@ model espiritu {
 }
 
 model pregunta {
-  id          Int      @id
-  descripcion String?  @db.VarChar
-  respuesta   String?  @db.VarChar
+  id          Int       @id
+  descripcion String?   @db.VarChar
+  respuesta   String?   @db.VarChar
   id_usuario  String?
-  usuario     usuario? @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "id_usuario")
+  tipo        String?   @db.VarChar
+  fecha       DateTime? @db.Date
+  usuario     usuario?  @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "id_usuario")
 }
 
 model respuesta {
@@ -32,14 +34,15 @@ model respuesta {
 }
 
 model usuario {
-  email           String     @unique(map: "email") @db.VarChar
-  password        String?    @db.VarChar
-  id              String     @id @default(uuid())
-  isEmailVerified Boolean    @default(false)
-  type            String     @db.VarChar
-  esencia         Float?     @default(0)
-  espiritu        espiritu[]
-  pregunta        pregunta[]
+  email              String              @unique(map: "email") @db.VarChar
+  password           String?             @db.VarChar
+  id                 String              @id @default(uuid())
+  isEmailVerified    Boolean             @default(false)
+  type               String              @db.VarChar
+  esencia            Int?
+  espiritu           espiritu[]
+  evaluacion_general evaluacion_general?
+  pregunta           pregunta[]
 }
 
 model moneda {
@@ -66,4 +69,34 @@ model esencia {
 model respuesta_predialogo {
   respuesta String? @db.VarChar
   id        String  @id @db.VarChar
+}
+
+model respuesta_general1 {
+  id        String  @id @db.VarChar
+  respuesta String? @db.VarChar
+}
+
+model respuesta_general2 {
+  id        String  @id @db.VarChar
+  respuesta String? @db.VarChar
+}
+
+model respuesta_general3 {
+  id        String  @id @db.VarChar
+  respuesta String? @db.VarChar
+}
+
+model respuesta_general4 {
+  id        String  @id @db.VarChar
+  respuesta String? @db.VarChar
+}
+
+model evaluacion_general {
+  id                 Int     @id @default(autoincrement())
+  user_id            String  @unique(map: "user_id_unique") @db.VarChar
+  respuesta_general1 String? @db.VarChar
+  respuesta_general2 String? @db.VarChar
+  respuesta_general3 String? @db.VarChar
+  respuesta_general4 String? @db.VarChar
+  usuario            usuario @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_id")
 }

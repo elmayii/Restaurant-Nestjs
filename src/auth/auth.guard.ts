@@ -20,11 +20,10 @@ export class AccessGuard implements CanActivate {
     }
 
     try {
-      
       const payload = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.accessSecret,
       });
-      
+
       request.user = payload;
     } catch {
       throw new UnauthorizedException();

@@ -14,9 +14,9 @@ export class EspiritusService {
     return this.prisma.espiritu.findUnique({ where: { id } });
   }
 
-  async createEspiritu(data: espiritu, req: any): Promise<espiritu> {
+  async createEspiritu(data: espiritu, id: string): Promise<espiritu> {
     const user = await this.prisma.usuario.findFirst({
-      where: { email: req.email },
+      where: { id },
     });
 
     if (!user) {
