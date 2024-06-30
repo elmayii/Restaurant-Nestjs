@@ -37,7 +37,7 @@ model usuario {
   id              String     @id @default(uuid())
   isEmailVerified Boolean    @default(false)
   type            String     @db.VarChar
-  esencia         Int?
+  esencia         Float?     @default(0)
   espiritu        espiritu[]
   pregunta        pregunta[]
 }

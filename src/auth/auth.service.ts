@@ -24,13 +24,13 @@ export class AuthService {
   ) {}
 
   async register({ email, password }: RegisterDto) {
-    const user = await this.userService.findOneByEmail(email);
+    let user = await this.userService.findOneByEmail(email);
 
     if (user) {
       return this.sendUser(user);
     }
 
-    await this.userService.createUsuario({
+    user = await this.userService.createUsuario({
       email,
       password: await bcryptjs.hash(password, 10),
       type: 'mail',
@@ -50,6 +50,7 @@ export class AuthService {
       email,
       password: await bcryptjs.hash(password, 10),
       type: 'google',
+      isEmailVerified: true
     });
 
     return this.sendUser(user);
@@ -66,6 +67,7 @@ export class AuthService {
       email,
       password: await bcryptjs.hash(password, 10),
       type: 'microsoft',
+      isEmailVerified: true
     });
 
     return this.sendUser(user);
@@ -101,6 +103,9 @@ export class AuthService {
       refreshToken,
       accessToken,
       email: user.email,
+      type: user.type,
+      valid: user.isEmailVerified,
+      essence: user.esencia
     };
   }
 
@@ -113,7 +118,10 @@ export class AuthService {
 
     const token = await this.jwtService.signAsync(
       { email },
-      { expiresIn: '1h' },
+      { 
+        expiresIn: '1h',
+        secret:jwtConstants.accessSecret
+      },
     );
 
     const resetUrl = `http://localhost:4321/auth/change-password/${token}/${email}`;
@@ -166,11 +174,24 @@ export class AuthService {
   }
 
   async sendVerificationEmail(email: string) {
+
+    const user = await this.userService.findOneByEmail(email);
+
+    if (!user) {
+      throw new BadRequestException('Email does not exist');
+    }
+
+    const payload = { email: user.email };
+    
     const token = await this.jwtService.signAsync(
-      { email },
-      { expiresIn: '1h' },
+      payload,
+      { 
+      expiresIn: '1h',
+      secret:jwtConstants.accessSecret
+      },
     );
-    const resetUrl = `http://localhost:3000/auth/verify-email/${token}`;
+    //console.log(token)
+    const resetUrl = `http://localhost:3000/auth/verify-email/?token=${token}`;
     const htmlContent = `
       <p>Hola ${email},</p>
       <p>Por favor verifica tu correo electrónico haciendo clic en el siguiente enlace:</p>
@@ -193,13 +214,36 @@ export class AuthService {
 
   async verifyEmail(token: string) {
     try {
-      const payload = await this.jwtService.verifyAsync(token);
+      console.log(token)
+      const payload = await this.jwtService.verifyAsync(token,{secret:jwtConstants.accessSecret});
       const email = payload.email;
       const user = await this.userService.findOneByEmail(email);
       if (user) {
         user.isEmailVerified = true;
         await this.userService.updateUsuario(user, user.id);
         return { success: true };
+      } else {
+        throw new Error('Correo electrónico no encontrado');
+      }
+    } catch (error) {
+      throw new Error('Token inválido o expirado');
+    }
+  }
+
+  async recoverSection(refreshToken: string) {
+    try {
+
+      let [type, token] = refreshToken.split(' ') ?? [];
+      token = type === 'Bearer' ? token : undefined;
+
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.refreshSecret,
+      });
+
+      const email = payload.email;
+      const user = await this.userService.findOneByEmail(email);
+      if (user) {
+        return this.sendUser(user);
       } else {
         throw new Error('Correo electrónico no encontrado');
       }

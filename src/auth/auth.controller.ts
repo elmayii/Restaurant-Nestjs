@@ -7,6 +7,9 @@ import {
   Request,
   Query,
   Redirect,
+  Headers,
+  Param,
+  Header,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
@@ -49,11 +52,18 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
 
+  @Get('login')
+  @UseGuards(RefreshGuard)
+  recoverSection(@Headers('authorization') refreshToken: string) {
+    return this.authService.recoverSection(refreshToken);
+  }
+
   @Get('profile')
   @UseGuards(RefreshGuard)
   profile(@Request() req) {
     return req.user;
   }
+
   @Post('request-password-reset')
   requestPasswordReset(
     @Body() resetPasswordRequestDto: ResetPasswordRequestDto,
@@ -68,9 +78,14 @@ export class AuthController {
   }
 
   @Get('verify-email')
-  @UseGuards(AccessGuard)
-  @Redirect('http://localhost:4321/')
+  @Redirect('http://localhost:4321/services')
   async verifyEmail(@Query('token') token: string) {
     return this.authService.verifyEmail(token);
+  }
+
+  @Get('request-verify-email')
+  @UseGuards(AccessGuard)
+  async sendVerificationEmail(@Query('email') email: string) {
+    return this.authService.sendVerificationEmail(email);
   }
 }
