@@ -124,7 +124,7 @@ export class AuthService {
       },
     );
 
-    const resetUrl = `http://localhost:4321/auth/change-password/${token}/${email}`;
+    const resetUrl = `https://eons-main.vercel.app/auth/change-password/${token}/${email}`;
 
     const htmlContent = `
       <p>Hola ${user.email},</p>
@@ -191,7 +191,7 @@ export class AuthService {
       },
     );
     //console.log(token)
-    const resetUrl = `http://localhost:3000/auth/verify-email/?token=${token}`;
+    const resetUrl = `https://eons-back.onrender.com/auth/verify-email/?token=${token}`;
     const htmlContent = `
       <p>Hola ${email},</p>
       <p>Por favor verifica tu correo electrónico haciendo clic en el siguiente enlace:</p>
@@ -214,7 +214,7 @@ export class AuthService {
 
   async verifyEmail(token: string) {
     try {
-      console.log(token)
+      //console.log(token)
       const payload = await this.jwtService.verifyAsync(token,{secret:jwtConstants.accessSecret});
       const email = payload.email;
       const user = await this.userService.findOneByEmail(email);
