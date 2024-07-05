@@ -9,18 +9,22 @@ import {
   NotFoundException,
   BadRequestException,
   Request,
+  UseGuards,
 } from '@nestjs/common';
 import { PreguntasService } from './pregunta.service';
 import { pregunta } from '@prisma/client';
+import { AccessGuard } from 'src/auth/auth.guard';
 @Controller('preguntas')
 export class PreguntasController {
   constructor(private readonly preguntasService: PreguntasService) {}
   @Get()
-  async getAllPreguntas() {
-    return this.preguntasService.getAllPreguntas();
+  @UseGuards(AccessGuard)
+  async getAllPreguntas(@Request() req: any) {
+    return this.preguntasService.getAllPreguntas(req.user);
   }
 
   @Post()
+  @UseGuards(AccessGuard)
   async createPregunta(@Body() data: pregunta, @Request() req: any) {
     return this.preguntasService.createPregunta(data, req.user);
   }

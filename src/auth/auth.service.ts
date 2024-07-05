@@ -50,7 +50,7 @@ export class AuthService {
       email,
       password: await bcryptjs.hash(password, 10),
       type: 'google',
-      isEmailVerified: true
+      isEmailVerified: true,
     });
 
     return this.sendUser(user);
@@ -67,7 +67,7 @@ export class AuthService {
       email,
       password: await bcryptjs.hash(password, 10),
       type: 'microsoft',
-      isEmailVerified: true
+      isEmailVerified: true,
     });
 
     return this.sendUser(user);
@@ -105,7 +105,7 @@ export class AuthService {
       email: user.email,
       type: user.type,
       valid: user.isEmailVerified,
-      essence: user.esencia
+      essence: user.esencia,
     };
   }
 
@@ -118,9 +118,9 @@ export class AuthService {
 
     const token = await this.jwtService.signAsync(
       { email },
-      { 
+      {
         expiresIn: '1h',
-        secret:jwtConstants.accessSecret
+        secret: jwtConstants.accessSecret,
       },
     );
 
@@ -174,7 +174,6 @@ export class AuthService {
   }
 
   async sendVerificationEmail(email: string) {
-
     const user = await this.userService.findOneByEmail(email);
 
     if (!user) {
@@ -182,14 +181,11 @@ export class AuthService {
     }
 
     const payload = { email: user.email };
-    
-    const token = await this.jwtService.signAsync(
-      payload,
-      { 
+
+    const token = await this.jwtService.signAsync(payload, {
       expiresIn: '1h',
-      secret:jwtConstants.accessSecret
-      },
-    );
+      secret: jwtConstants.accessSecret,
+    });
     //console.log(token)
     const resetUrl = `https://eons-back.onrender.com/auth/verify-email/?token=${token}`;
     const htmlContent = `
@@ -215,7 +211,9 @@ export class AuthService {
   async verifyEmail(token: string) {
     try {
       //console.log(token)
-      const payload = await this.jwtService.verifyAsync(token,{secret:jwtConstants.accessSecret});
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.accessSecret,
+      });
       const email = payload.email;
       const user = await this.userService.findOneByEmail(email);
       if (user) {
@@ -232,7 +230,7 @@ export class AuthService {
 
   async recoverSection(refreshToken: string) {
     try {
-
+      // eslint-disable-next-line prefer-const
       let [type, token] = refreshToken.split(' ') ?? [];
       token = type === 'Bearer' ? token : undefined;
 

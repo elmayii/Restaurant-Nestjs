@@ -6,8 +6,11 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class PreguntasService {
   constructor(private prisma: PrismaService) {}
 
-  async getAllPreguntas(): Promise<pregunta[]> {
-    return this.prisma.pregunta.findMany();
+  async getAllPreguntas(request: any): Promise<pregunta[]> {
+    const user = await this.prisma.usuario.findFirst({
+      where: { id: request.id },
+    });
+    return this.prisma.pregunta.findMany({ where: { id_usuario: user.id } });
   }
 
   async getPreguntaById(id: number): Promise<pregunta> {
@@ -15,31 +18,27 @@ export class PreguntasService {
   }
 
   async createPregunta(data: pregunta, request: any): Promise<pregunta> {
+    console.log(request);
     const user = await this.prisma.usuario.findFirst({
-      where: { email: request.email },
+      where: { id: request.id },
     });
+
+    const date = new Date();
+
     if (data.tipo === 'dialog') {
       return this.prisma.pregunta.create({
         data: {
           ...data,
           id_usuario: user.id,
+          fecha: date,
         },
       });
     } else if (data.tipo === 'day') {
-      const date = new Date();
-      const formattedDateTime = date.toLocaleString('es-ES', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-      });
       return this.prisma.pregunta.create({
         data: {
           ...data,
           id_usuario: user.id,
-          fecha: formattedDateTime,
+          fecha: date,
         },
       });
     }

@@ -19,12 +19,12 @@ model espiritu {
 }
 
 model pregunta {
-  id          Int       @id
+  id          Int       @id @default(autoincrement())
   descripcion String?   @db.VarChar
   respuesta   String?   @db.VarChar
-  id_usuario  String?
-  tipo        String?   @db.VarChar
+  id_usuario  String?   @db.VarChar
   fecha       DateTime? @db.Date
+  tipo        String?   @db.VarChar
   usuario     usuario?  @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "id_usuario")
 }
 
