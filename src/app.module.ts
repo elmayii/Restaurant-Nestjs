@@ -14,6 +14,7 @@ import { EvaluacionGeneralModule } from './evaluacion_general/evaluacion_general
 import { ScheduleModule } from '@nestjs/schedule';
 import { UserCleanupService } from './user-cleanup/user-cleanup.service';
 import { TransferenciaModule } from './transferencia/transferencia.module';
+import { WebsocketModule } from './websockets/websocket.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { TransferenciaModule } from './transferencia/transferencia.module';
     EvaluacionGeneralModule,
     ScheduleModule.forRoot(),
     TransferenciaModule,
+    WebsocketModule,
   ],
   providers: [UserCleanupService],
 })
