@@ -4,6 +4,8 @@ import { AuthService } from './auth.service';
 import { UsuarioModule } from 'src/usuario/usuario.module';
 import { JwtModule } from '@nestjs/jwt';
 import { MailModule } from 'src/mailer/mail.module';
+import { PrismaModule } from 'src/prisma/prisma.module';
+import { WebsocketModule } from 'src/websockets/websocket.module';
 
 @Module({
   controllers: [AuthController],
@@ -14,6 +16,8 @@ import { MailModule } from 'src/mailer/mail.module';
       global: true,
     }),
     MailModule,
+    PrismaModule,
+    WebsocketModule,
   ],
   exports: [AuthService],
 })

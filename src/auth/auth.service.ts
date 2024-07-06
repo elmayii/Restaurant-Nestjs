@@ -14,6 +14,7 @@ import { ResetPasswordRequestDto } from './dto/reset-password-request.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 import { usuario } from '@prisma/client';
 import { jwtConstants } from './constants/jwt.constant';
+import { WebsocketGateway } from 'src/websockets/websocket.gateway';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +22,7 @@ export class AuthService {
     private readonly userService: UsuariosService,
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
+    private readonly notificationsGateway: WebsocketGateway,
   ) {}
 
   async register({ email, password }: RegisterDto) {
@@ -186,7 +188,6 @@ export class AuthService {
       expiresIn: '1h',
       secret: jwtConstants.accessSecret,
     });
-    //console.log(token)
     const resetUrl = `https://eons-back.onrender.com/auth/verify-email/?token=${token}`;
     const htmlContent = `
       <p>Hola ${email},</p>
@@ -210,7 +211,6 @@ export class AuthService {
 
   async verifyEmail(token: string) {
     try {
-      //console.log(token)
       const payload = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.accessSecret,
       });
@@ -219,6 +219,9 @@ export class AuthService {
       if (user) {
         user.isEmailVerified = true;
         await this.userService.updateUsuario(user, user.id);
+        this.notificationsGateway.notifyUser(user.id, {
+          message: 'Su correo ha sido verificado',
+        });
         return { success: true };
       } else {
         throw new Error('Correo electrónico no encontrado');
