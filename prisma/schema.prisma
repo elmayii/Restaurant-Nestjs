@@ -23,8 +23,8 @@ model pregunta {
   descripcion String?   @db.VarChar
   respuesta   String?   @db.VarChar
   id_usuario  String?   @db.VarChar
-  fecha       DateTime? @db.Date
   tipo        String?   @db.VarChar
+  fecha       DateTime? @db.Date
   usuario     usuario?  @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "id_usuario")
 }
 
@@ -40,10 +40,11 @@ model usuario {
   isEmailVerified    Boolean             @default(false)
   type               String              @db.VarChar
   esencia            Int?
+  createdAt          DateTime            @default(now())
   espiritu           espiritu[]
   evaluacion_general evaluacion_general?
   pregunta           pregunta[]
-  createdAt          DateTime            @default(now())
+  transferencia      transferencia[]
 }
 
 model moneda {
@@ -100,4 +101,13 @@ model evaluacion_general {
   respuesta_general3 String? @db.VarChar
   respuesta_general4 String? @db.VarChar
   usuario            usuario @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_id")
+}
+
+model transferencia {
+  id       Int       @id @default(autoincrement())
+  user_id  String?   @db.VarChar
+  receiver String?   @db.VarChar
+  amount   Int?
+  date     DateTime  @default(now())
+  usuario  usuario?  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_id")
 }

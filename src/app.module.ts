@@ -13,6 +13,7 @@ import { RespuestaPredialogoModule } from './respuesta_predialogo/respuesta_pred
 import { EvaluacionGeneralModule } from './evaluacion_general/evaluacion_general.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { UserCleanupService } from './user-cleanup/user-cleanup.service';
+import { TransferenciaModule } from './transferencia/transferencia.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { UserCleanupService } from './user-cleanup/user-cleanup.service';
     RespuestaPredialogoModule,
     EvaluacionGeneralModule,
     ScheduleModule.forRoot(),
+    TransferenciaModule,
   ],
   providers: [UserCleanupService],
 })
