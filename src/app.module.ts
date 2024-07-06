@@ -11,6 +11,8 @@ import { RespuestaDiaModule } from './respuesta_dia/respuesta_dia.module';
 import { TropiPayModule } from './tropipay/tropipay.module';
 import { RespuestaPredialogoModule } from './respuesta_predialogo/respuesta_predialogo.module';
 import { EvaluacionGeneralModule } from './evaluacion_general/evaluacion_general.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { UserCleanupService } from './user-cleanup/user-cleanup.service';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { EvaluacionGeneralModule } from './evaluacion_general/evaluacion_general
     TropiPayModule,
     RespuestaPredialogoModule,
     EvaluacionGeneralModule,
+    ScheduleModule.forRoot(),
   ],
+  providers: [UserCleanupService],
 })
 export class AppModule {}

@@ -43,6 +43,7 @@ model usuario {
   espiritu           espiritu[]
   evaluacion_general evaluacion_general?
   pregunta           pregunta[]
+  createdAt          DateTime            @default(now())
 }
 
 model moneda {

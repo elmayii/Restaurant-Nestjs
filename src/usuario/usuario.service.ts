@@ -40,4 +40,12 @@ export class UsuariosService {
       },
     });
   }
+
+  async findUnverifiedUsers(): Promise<usuario[]> {
+    return this.prisma.usuario.findMany({
+      where: {
+        isEmailVerified: false,
+      },
+    });
+  }
 }
