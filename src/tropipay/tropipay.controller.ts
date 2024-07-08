@@ -3,6 +3,7 @@ import { TropiPayService } from './tropipay.service';
 import { EsenciasService } from 'src/esencia/esencia.service';
 import { sha256 } from 'js-sha256';
 import { UsuariosService } from 'src/usuario/usuario.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Controller('tropipay')
 export class TropiPayController {
@@ -10,6 +11,7 @@ export class TropiPayController {
     private readonly tropiPayService: TropiPayService,
     private readonly esenciaService: EsenciasService,
     private readonly usuarioService: UsuariosService,
+    private readonly prisma: PrismaService
   ) {}
 
   @Get('get')
@@ -18,9 +20,13 @@ export class TropiPayController {
   }
   @Post('create-payment-card/:id')
   async createPaymentCard(@Param('id') id: string) {
+    const ID = parseInt(id)
+    if(ID >= 1 && ID <= 4){
+      const esencia = this.esenciaService.getEsenciaById(Number(id));
+    }
     const esencia = this.esenciaService.getEsenciaById(Number(id));
     return await this.tropiPayService.createPaymentCard({
-      reference: 'my-reference',
+      reference: 'mayito2',
       concept: 'Esencias',
       favorite: true,
       description: (await esencia).descripcion,
@@ -30,20 +36,12 @@ export class TropiPayController {
       reasonId: 4,
       expirationDays: 1,
       lang: 'es',
-      urlSuccess: 'https://my-business.com/payment-ok',
+      urlSuccess: 'https://webhook.site/c984565f-07bb-4a0a-ab20-87d1294fc0bd',
       urlFailed: 'https://my-business.com/payment-ko',
       urlNotification:
-        'https://webhook.site/fa08adba-b98a-4c40-84d8-1813b3d5ca2e',
+        'https://webhook.site/a8b11a1a-e3b9-4811-9f0f-a0452647a269',
       serviceDate: '2021-08-20',
-      client: {
-        name: 'John',
-        lastName: 'McClane',
-        address: 'Ave. Guadí 232, Barcelona, Barcelona',
-        phone: '+34645553333',
-        email: 'client@email.com',
-        countryId: 1,
-        termsAndConditions: 'true',
-      },
+      client: null,
       directPayment: true,
       paymentMethods: ['EXT', 'TPP'],
     });
@@ -71,10 +69,14 @@ export class TropiPayController {
         epay = 240;
       }
       const user = this.usuarioService.findOneByEmail(
-        data.data.charges[0].clientEmail,
+        data.data.reference,
       );
       (await user).esencia = (await user).esencia + epay;
       this.usuarioService.updateUsuario(await user, (await user).id);
+      return this.prisma.compra.create({data:{
+        email: data.data.reference,
+        bank_order: data.data.bankOrderCode,
+      }})
     } else {
       console.log('Firma no válida');
     }

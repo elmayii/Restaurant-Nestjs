@@ -90,14 +90,14 @@ export class AuthService {
   }
 
   private async sendUser(user: usuario) {
-    const payload = { id: user.id };
+    const payload = { id: user.id, email: user.email };
 
     const refreshToken = await this.jwtService.signAsync(payload, {
       expiresIn: '7d',
       secret: jwtConstants.refreshSecret,
     });
     const accessToken = await this.jwtService.signAsync(payload, {
-      expiresIn: '4h',
+      expiresIn: '6h',
       secret: jwtConstants.accessSecret,
     });
 

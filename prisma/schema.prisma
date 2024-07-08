@@ -111,3 +111,10 @@ model transferencia {
   date     DateTime @default(now())
   usuario  usuario? @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_id")
 }
+
+model compra {
+  id         Int       @id @default(autoincrement())
+  email      String?   @db.VarChar
+  date       DateTime  @default(now())
+  bank_order String?   @db.VarChar
+}
