@@ -205,9 +205,9 @@ export class RespuestasService {
     return this.prisma.respuesta.create({ data });
   }
 
-  async closeDialog(email: string) {
+  async closeDialog(id: string) {
     const user = await this.prisma.usuario.findFirst({
-      where: { email },
+      where: { id },
     });
     return (userThrows.throws[user.email] = void 0);
   }

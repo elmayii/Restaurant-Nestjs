@@ -1,10 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { map } from 'rxjs/operators';
+import { PaymentCheck } from './dto/paymentCheck';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class TropiPayService {
-  constructor(private http: HttpService) {}
+  constructor(private http: HttpService,
+    private prisma: PrismaService) {}
 
   async getAccessToken() {
     const body = {
@@ -31,6 +34,22 @@ export class TropiPayService {
       return response.data;
     } catch (error) {
       console.error(error.response.data);
+    }
+  }
+
+  async validateBankOrder(data: PaymentCheck) {
+    try {
+      console.log(data)
+      let compra = this.prisma.compra.findFirst({where:{email:data.reference, bank_order:data.banckOrderCode}})
+
+      if(compra){
+        return {message:"Compra exitosa"}
+      }
+      else{
+        throw new NotFoundException('No se encuentra la compra');
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
 }
