@@ -4,6 +4,7 @@ import { EsenciasService } from 'src/esencia/esencia.service';
 import { sha256 } from 'js-sha256';
 import { UsuariosService } from 'src/usuario/usuario.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { PaymentCheck } from './dto/paymentCheck';
 
 @Controller('tropipay')
 export class TropiPayController {
@@ -36,10 +37,11 @@ export class TropiPayController {
       reasonId: 4,
       expirationDays: 1,
       lang: 'es',
-      urlSuccess: 'https://webhook.site/c984565f-07bb-4a0a-ab20-87d1294fc0bd',
-      urlFailed: 'https://my-business.com/payment-ko',
+      urlSuccess: 'https://eons-main.vercel.app/payment',
+      urlFailed: 'https://eons-main.vercel.app/payment/failed',
       urlNotification:
-        'https://webhook.site/a8b11a1a-e3b9-4811-9f0f-a0452647a269',
+        //'https://webhook.site/a8b11a1a-e3b9-4811-9f0f-a0452647a269'
+        'https://eons-back.onrender.com/tropipay/',
       serviceDate: '2021-08-20',
       client: null,
       directPayment: true,
@@ -80,5 +82,10 @@ export class TropiPayController {
     } else {
       console.log('Firma no válida');
     }
+  }
+
+  @Post('validate-payment')
+  async validatePayment (@Body() data:any){
+    return await this.tropiPayService.validateBankOrder(data)
   }
 }

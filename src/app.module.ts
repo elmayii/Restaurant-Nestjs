@@ -15,6 +15,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { UserCleanupService } from './user-cleanup/user-cleanup.service';
 import { TransferenciaModule } from './transferencia/transferencia.module';
 import { WebsocketModule } from './websockets/websocket.module';
+import { EsenciaModule } from './esencia/esencia.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { WebsocketModule } from './websockets/websocket.module';
     RespuestaPredialogoModule,
     EvaluacionGeneralModule,
     ScheduleModule.forRoot(),
+    EsenciaModule,
     TransferenciaModule,
     WebsocketModule,
   ],
