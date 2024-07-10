@@ -10,6 +10,7 @@ import { jwtConstants } from './constants/jwt.constant';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { WebsocketGateway } from 'src/websockets/websocket.gateway';
+
 @Injectable()
 export class AccessGuard implements CanActivate {
   constructor(
@@ -30,9 +31,11 @@ export class AccessGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.accessSecret,
       });
+
       const user = await this.prisma.usuario.findFirst({
         where: { id: payload.id },
       });
+
       if (!user || !user.isEmailVerified) {
         if (user) {
           this.notificationsGateway.notifyUser(user.id, {
@@ -43,8 +46,12 @@ export class AccessGuard implements CanActivate {
       }
 
       request.user = payload;
-    } catch {
-      throw new UnauthorizedException();
+    } catch (err) {
+      if (err instanceof ForbiddenException) {
+        throw err;
+      } else {
+        throw new UnauthorizedException();
+      }
     }
 
     return true;

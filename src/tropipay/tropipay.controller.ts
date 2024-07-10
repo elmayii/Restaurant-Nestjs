@@ -1,10 +1,19 @@
-import { Controller, Get, Param, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Body,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { TropiPayService } from './tropipay.service';
 import { EsenciasService } from 'src/esencia/esencia.service';
 import { sha256 } from 'js-sha256';
 import { UsuariosService } from 'src/usuario/usuario.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { PaymentCheck } from './dto/paymentCheck';
+import { JWTUser } from 'src/lib/jwt';
+import { AccessGuard } from 'src/auth/auth.guard';
 
 @Controller('tropipay')
 export class TropiPayController {
@@ -12,22 +21,24 @@ export class TropiPayController {
     private readonly tropiPayService: TropiPayService,
     private readonly esenciaService: EsenciasService,
     private readonly usuarioService: UsuariosService,
-    private readonly prisma: PrismaService
+    private readonly prisma: PrismaService,
   ) {}
 
   @Get('get')
   async get() {
     return await this.tropiPayService.getAccessToken();
   }
+
   @Post('create-payment-card/:id')
-  async createPaymentCard(@Param('id') id: string) {
-    const ID = parseInt(id)
-    if(ID >= 1 && ID <= 4){
-      const esencia = this.esenciaService.getEsenciaById(Number(id));
-    }
+  @UseGuards(AccessGuard)
+  async createPaymentCard(
+    @Param('id') id: string,
+    @Request() req: { user: JWTUser },
+  ) {
+    const ref = (await this.usuarioService.getUsuarioById(req.user.id)).email;
     const esencia = this.esenciaService.getEsenciaById(Number(id));
     return await this.tropiPayService.createPaymentCard({
-      reference: 'mayito2',
+      reference: ref,
       concept: 'Esencias',
       favorite: true,
       description: (await esencia).descripcion,
@@ -70,22 +81,22 @@ export class TropiPayController {
       } else {
         epay = 240;
       }
-      const user = this.usuarioService.findOneByEmail(
-        data.data.reference,
-      );
+      const user = this.usuarioService.findOneByEmail(data.data.reference);
       (await user).esencia = (await user).esencia + epay;
       this.usuarioService.updateUsuario(await user, (await user).id);
-      return this.prisma.compra.create({data:{
-        email: data.data.reference,
-        bank_order: data.data.bankOrderCode,
-      }})
+      return this.prisma.compra.create({
+        data: {
+          email: data.data.reference,
+          bank_order: data.data.bankOrderCode,
+        },
+      });
     } else {
       console.log('Firma no válida');
     }
   }
 
   @Post('validate-payment')
-  async validatePayment (@Body() data:any){
-    return await this.tropiPayService.validateBankOrder(data)
+  async validatePayment(@Body() data: any) {
+    return await this.tropiPayService.validateBankOrder(data);
   }
 }

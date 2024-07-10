@@ -1,4 +1,4 @@
 export class PaymentCheck {
-    reference: string;
-    banckOrderCode:string;
+  reference: string;
+  banckOrderCode: string;
 }

@@ -6,8 +6,10 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class TropiPayService {
-  constructor(private http: HttpService,
-    private prisma: PrismaService) {}
+  constructor(
+    private http: HttpService,
+    private prisma: PrismaService,
+  ) {}
 
   async getAccessToken() {
     const body = {
@@ -39,17 +41,18 @@ export class TropiPayService {
 
   async validateBankOrder(data: PaymentCheck) {
     try {
-      console.log(data)
-      let compra = this.prisma.compra.findFirst({where:{email:data.reference, bank_order:data.banckOrderCode}})
+      console.log(data);
+      const compra = this.prisma.compra.findFirst({
+        where: { email: data.reference, bank_order: data.banckOrderCode },
+      });
 
-      if(compra){
-        return {message:"Compra exitosa"}
-      }
-      else{
+      if (compra) {
+        return { message: 'Compra exitosa' };
+      } else {
         throw new NotFoundException('No se encuentra la compra');
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
 }
