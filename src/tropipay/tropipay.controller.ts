@@ -1,10 +1,12 @@
-import { Controller, Get, Param, Post, Body } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, UseGuards, Request } from '@nestjs/common';
 import { TropiPayService } from './tropipay.service';
 import { EsenciasService } from 'src/esencia/esencia.service';
 import { sha256 } from 'js-sha256';
 import { UsuariosService } from 'src/usuario/usuario.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PaymentCheck } from './dto/paymentCheck';
+import { JWTUser } from 'src/lib/jwt';
+import { AccessGuard } from 'src/auth/auth.guard';
 
 @Controller('tropipay')
 export class TropiPayController {
@@ -19,15 +21,21 @@ export class TropiPayController {
   async get() {
     return await this.tropiPayService.getAccessToken();
   }
+  
   @Post('create-payment-card/:id')
-  async createPaymentCard(@Param('id') id: string) {
+  @UseGuards(AccessGuard)
+  async createPaymentCard(
+    @Param('id') id: string,
+    @Request() req: {user: JWTUser},
+    ) {
     const ID = parseInt(id)
     if(ID >= 1 && ID <= 4){
       const esencia = this.esenciaService.getEsenciaById(Number(id));
     }
+    const ref = (await this.usuarioService.getUsuarioById(req.user.id)).email
     const esencia = this.esenciaService.getEsenciaById(Number(id));
     return await this.tropiPayService.createPaymentCard({
-      reference: 'mayito2',
+      reference: ref,
       concept: 'Esencias',
       favorite: true,
       description: (await esencia).descripcion,
