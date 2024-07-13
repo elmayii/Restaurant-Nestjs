@@ -6,11 +6,12 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class PreguntasService {
   constructor(private prisma: PrismaService) {}
 
-  async getAllPreguntas(request: any): Promise<pregunta[]> {
-    const user = await this.prisma.usuario.findFirst({
-      where: { id: request.id },
-    });
-    return this.prisma.pregunta.findMany({ where: { id_usuario: user.id } });
+  async getAllPreguntas(request: any, type:string): Promise<pregunta[]> {
+    if(type)
+      return this.prisma.pregunta.findMany({ where: { id_usuario: request.id, tipo:type } });
+    else{
+      return this.prisma.pregunta.findMany({ where: { id_usuario: request.id } });
+    }
   }
 
   async getPreguntaById(id: number): Promise<pregunta> {

@@ -82,7 +82,6 @@ export class AuthController {
   }
 
   @Get('request-verify-email')
-  @UseGuards(AccessGuard)
   async sendVerificationEmail(@Query('email') email: string) {
     return this.authService.sendVerificationEmail(email);
   }
