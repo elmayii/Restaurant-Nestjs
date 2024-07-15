@@ -23,8 +23,8 @@ model pregunta {
   descripcion String?   @db.VarChar
   respuesta   String?   @db.VarChar
   id_usuario  String?   @db.VarChar
-  fecha       DateTime? @db.Date
   tipo        String?   @db.VarChar
+  fecha       DateTime? @db.Date
   usuario     usuario?  @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "id_usuario")
 }
 
@@ -43,6 +43,7 @@ model usuario {
   createdAt          DateTime            @default(now())
   espiritu           espiritu[]
   evaluacion_general evaluacion_general?
+  notificaciones     notificaciones[]
   pregunta           pregunta[]
   transferencia      transferencia[]
 }
@@ -113,8 +114,17 @@ model transferencia {
 }
 
 model compra {
-  id         Int       @id @default(autoincrement())
-  email      String?   @db.VarChar
-  date       DateTime  @default(now())
-  bank_order String?   @db.VarChar
+  id         Int      @id @default(autoincrement())
+  email      String?  @db.VarChar
+  date       DateTime @default(now())
+  bank_order String?  @db.VarChar
+}
+
+model notificaciones {
+  id          Int      @id @default(autoincrement())
+  id_usuario  String?  @db.VarChar
+  descripcion String?  @db.VarChar
+  estado      Boolean? @default(false)
+  usuario     usuario? @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  date        DateTime @default(now())
 }

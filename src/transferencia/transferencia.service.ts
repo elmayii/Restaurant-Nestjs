@@ -49,8 +49,15 @@ export class TransferenciaService {
       }),
     ]);
 
+    this.prisma.notificaciones.create({
+      data: {
+        descripcion: `Usted ha recibido ${amount} esencias de ${sender.email}`,
+        id_usuario: sender.id,
+      },
+    });
+
     this.notificationsGateway.notifyUser(receiverUser.id, {
-      message: `You have received ${amount} essence from ${sender.email}`,
+      message: `Usted ha recibido ${amount} esencias de ${sender.email}`,
       amount,
       senderEmail: sender.email,
     });

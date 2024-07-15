@@ -5,14 +5,14 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Request } from 'express';
-import { jwtConstants } from './constants/jwt.constant';
+import { jwtConstants } from '../auth/constants/jwt.constant';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { WebsocketGateway } from 'src/websockets/websocket.gateway';
+import { Socket } from 'socket.io';
 
 @Injectable()
-export class AccessGuard implements CanActivate {
+export class SocketGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
@@ -20,9 +20,11 @@ export class AccessGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
+    const request: Socket = context.switchToWs().getClient<Socket>();
+    console.log('eeeess:', request);
+    //const request = context.switchToHttp().getRequest();
 
-    const token = this.extractTokenFromHeader(request);
+    const token = request.handshake.auth.token;
     if (!token) {
       throw new UnauthorizedException();
     }
@@ -38,12 +40,6 @@ export class AccessGuard implements CanActivate {
 
       if (!user || !user.isEmailVerified) {
         if (user) {
-          this.prisma.notificaciones.create({
-            data: {
-              descripcion: 'Recuerde que usted no ha verificado su cuenta',
-              id_usuario: user.id,
-            },
-          });
           this.notificationsGateway.notifyUser(user.id, {
             message: 'Recuerde que usted no ha verificado su cuenta',
           });
@@ -51,7 +47,7 @@ export class AccessGuard implements CanActivate {
         throw new ForbiddenException('Email not verified');
       }
 
-      request.user = payload;
+      request.data.token = token;
     } catch (err) {
       if (err instanceof ForbiddenException) {
         throw err;
@@ -61,10 +57,5 @@ export class AccessGuard implements CanActivate {
     }
 
     return true;
-  }
-
-  private extractTokenFromHeader(request: Request): string | undefined {
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
   }
 }
