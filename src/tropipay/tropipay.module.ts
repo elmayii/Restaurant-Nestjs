@@ -16,7 +16,7 @@ import { JwtService } from '@nestjs/jwt';
     UsuariosService,
     WebsocketGateway,
     PrismaService,
-    JwtService
+    JwtService,
   ],
   controllers: [TropiPayController],
   imports: [HttpModule, PrismaModule],

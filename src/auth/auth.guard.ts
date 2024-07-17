@@ -38,6 +38,12 @@ export class AccessGuard implements CanActivate {
 
       if (!user || !user.isEmailVerified) {
         if (user) {
+          this.prisma.notificaciones.create({
+            data: {
+              descripcion: 'Recuerde que usted no ha verificado su cuenta',
+              id_usuario: user.id,
+            },
+          });
           this.notificationsGateway.notifyUser(user.id, {
             message: 'Recuerde que usted no ha verificado su cuenta',
           });

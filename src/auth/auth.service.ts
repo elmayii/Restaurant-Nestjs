@@ -180,8 +180,7 @@ export class AuthService {
 
     if (!user) {
       throw new BadRequestException('Email does not exist');
-    }
-    else if(user.isEmailVerified){
+    } else if (user.isEmailVerified) {
       throw new BadRequestException('This user its valid');
     }
 

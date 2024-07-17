@@ -1,17 +1,16 @@
 import {
- CanActivate,
- ExecutionContext,
- ForbiddenException,
- Injectable,
- UnauthorizedException,
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
-import { Request } from 'express';
 import { jwtConstants } from '../auth/constants/jwt.constant';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { WebsocketGateway } from 'src/websockets/websocket.gateway';
-import { Server, Socket } from 'socket.io';
-  
+import { Socket } from 'socket.io';
+
 @Injectable()
 export class SocketGuard implements CanActivate {
   constructor(
@@ -21,11 +20,11 @@ export class SocketGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request: Socket = context.switchToWs().getClient<Socket>()
-    console.log('eeeess:',request)
+    const request: Socket = context.switchToWs().getClient<Socket>();
+    console.log('eeeess:', request);
     //const request = context.switchToHttp().getRequest();
 
-    const token = request.handshake.auth.token
+    const token = request.handshake.auth.token;
     if (!token) {
       throw new UnauthorizedException();
     }
