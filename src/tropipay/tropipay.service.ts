@@ -33,6 +33,7 @@ export class TropiPayService {
       const response = await this.http
         .post(process.env.CREATE_PAYMENT_CARD, body, { headers })
         .toPromise();
+      console.log(response)
       return response.data;
     } catch (error) {
       console.error(error.response.data);

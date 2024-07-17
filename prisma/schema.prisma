@@ -25,6 +25,7 @@ model pregunta {
   id_usuario  String?   @db.VarChar
   fecha       DateTime? @db.Date
   tipo        String?   @db.VarChar
+  favorito    Boolean?  @default(false)
   usuario     usuario?  @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "id_usuario")
 }
 
@@ -113,8 +114,8 @@ model transferencia {
 }
 
 model compra {
-  id         Int       @id @default(autoincrement())
-  email      String?   @db.VarChar
-  date       DateTime  @default(now())
-  bank_order String?   @db.VarChar
+  id         Int      @id @default(autoincrement())
+  email      String?  @db.VarChar
+  date       DateTime @default(now())
+  bank_order String?  @db.VarChar
 }
