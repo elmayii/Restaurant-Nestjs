@@ -8,3 +8,8 @@ export class CreateTransferenciaDto {
   @Min(1)
   amount: number;
 }
+
+export interface PriceDTO {
+  descuento:number;
+  costo:number;
+}

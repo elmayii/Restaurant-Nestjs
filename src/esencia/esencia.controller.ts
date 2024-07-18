@@ -31,6 +31,11 @@ export class EsenciasController {
     return esenciaFound;
   }
 
+  @Get('calculate/:esencia')
+  async getExactEsenciaCost(@Param('esencia') esencia: number) {
+    return this.esenciasService.calculateEsenciaCost(esencia);
+  }
+
   @Delete(':id')
   async deleteEsencia(@Param('id') id: string) {
     try {

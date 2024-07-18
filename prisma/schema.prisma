@@ -68,6 +68,7 @@ model esencia {
   id          Int     @id @default(autoincrement())
   precio      String? @db.VarChar
   descripcion String? @db.VarChar
+  descuento   Int?    @default(0)
 }
 
 model respuesta_predialogo {
