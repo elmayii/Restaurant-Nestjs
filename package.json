@@ -34,7 +34,7 @@
     "@nestjs/schedule": "^4.1.0",
     "@nestjs/websockets": "^10.3.10",
     "@prisma/client": "5.14.0",
-    "@yosle/tropipayjs": "^0.1.22",
+    "@yosle/tropipayjs": "^0.1.28",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",

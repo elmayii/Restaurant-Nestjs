@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { esencia } from '@prisma/client';
+import { calculatePrice } from 'src/lib/calc';
+import { PriceDTO } from 'src/lib/dtos';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -29,5 +31,9 @@ export class EsenciasService {
     return this.prisma.esencia.delete({
       where: { id },
     });
+  }
+
+  calculateEsenciaCost(esencia: number): PriceDTO {
+    return calculatePrice(esencia)
   }
 }

@@ -10,6 +10,7 @@ import {
   BadRequestException,
   Request,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { PreguntasService } from './pregunta.service';
 import { pregunta } from '@prisma/client';
@@ -19,8 +20,8 @@ export class PreguntasController {
   constructor(private readonly preguntasService: PreguntasService) {}
   @Get()
   @UseGuards(AccessGuard)
-  async getAllPreguntas(@Request() req: any) {
-    return this.preguntasService.getAllPreguntas(req.user);
+  async getAllPreguntas(@Request() req: any, @Query('type') type: string) {
+    return this.preguntasService.getAllPreguntas(req.user,type);
   }
 
   @Post()

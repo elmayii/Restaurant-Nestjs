@@ -62,7 +62,7 @@ export class TropiPayController {
     const esencia = await this.esenciaService.getEsenciaById(Number(id));
     const payload = {
       descripcion: esencia?esencia.descripcion:`${datah.esencia} Esencias`,
-      precio: esencia?Number(esencia.precio):datah.precio
+      precio: esencia?parseInt(esencia.precio):datah.precio
     }
     console.log(esencia)
     console.log('data:',datah)
@@ -71,8 +71,8 @@ export class TropiPayController {
       reference: ref,
       concept: 'Esencias',
       favorite: true,
-      description: esencia.descripcion,
-      amount: parseInt(esencia.precio),
+      description: payload.descripcion,
+      amount: payload.precio,
       currency: 'USD',
       singleUse: true,
       reasonId: 4,
