@@ -12,4 +12,5 @@ export class CreateTransferenciaDto {
 export interface PriceDTO {
   descuento:number;
   costo:number;
+  esencia:number
 }

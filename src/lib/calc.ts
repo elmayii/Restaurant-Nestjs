@@ -7,7 +7,8 @@ export function calculatePrice(esencia:number) : PriceDTO {
     if(esencia <= 5){
         return {
             descuento:0,
-            costo:esencia
+            costo:esencia,
+            esencia:esencia
         }
     }
     // 15 -- 4%
@@ -66,6 +67,7 @@ function procedure (
         let costo = value - (descuento/100) * value
         return {
             descuento: Number(descuento.toFixed(2)),
-            costo: Number(costo.toFixed(2))
+            costo: Number(costo.toFixed(2)),
+            esencia: value
         }
 }
