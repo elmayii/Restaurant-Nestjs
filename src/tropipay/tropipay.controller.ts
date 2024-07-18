@@ -15,9 +15,6 @@ import { JWTUser } from 'src/lib/jwt';
 import { AccessGuard } from 'src/auth/auth.guard';
 import { Tropipay } from '@yosle/tropipayjs';
 import { ServerMode$1 } from './type/type';
-import { PriceDTO } from 'src/lib/dtos';
-import { Operation } from '@prisma/client/runtime/library';
-import { PaymentOperation } from './dto/paymentCheck';
 
 @Controller('tropipay')
 export class TropiPayController {
@@ -46,7 +43,6 @@ export class TropiPayController {
   @UseGuards(AccessGuard)
   async createPaymentCard(
     @Param('id') id: string,
-    @Body() datah: PaymentOperation|null,
     @Request() req: { user: JWTUser },
   ) {
     const date = new Date();
@@ -59,20 +55,13 @@ export class TropiPayController {
       hour12: true,
     });
     const ref = (await this.usuarioService.getUsuarioById(req.user.id)).email;
-    const esencia = await this.esenciaService.getEsenciaById(Number(id));
-    const payload = {
-      descripcion: esencia?esencia.descripcion:`${datah.esencia} Esencias`,
-      precio: esencia?parseInt(esencia.precio):datah.precio
-    }
-    console.log(esencia)
-    console.log('data:',datah)
-    console.log(payload)
+    const esencia = this.esenciaService.getEsenciaById(Number(id));
     return await this.tpp.paymentCards.create({
       reference: ref,
       concept: 'Esencias',
       favorite: true,
-      description: payload.descripcion,
-      amount: payload.precio,
+      description: (await esencia).descripcion,
+      amount: Number((await esencia).precio),
       currency: 'USD',
       singleUse: true,
       reasonId: 4,
