@@ -1,10 +1,23 @@
-import { Controller, Get, Param, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Param,
+  Post,
+  Body,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { TropiPayService } from './tropipay.service';
 import { EsenciasService } from 'src/esencia/esencia.service';
 import { sha256 } from 'js-sha256';
 import { UsuariosService } from 'src/usuario/usuario.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { PaymentCheck } from './dto/paymentCheck';
+import { JWTUser } from 'src/lib/jwt';
+import { AccessGuard } from 'src/auth/auth.guard';
+import { Tropipay } from '@yosle/tropipayjs';
+import { ServerMode$1 } from './type/type';
+import { PriceDTO } from 'src/lib/dtos';
+import { Operation } from '@prisma/client/runtime/library';
+import { PaymentOperation } from './dto/paymentCheck';
 
 @Controller('tropipay')
 export class TropiPayController {
@@ -12,26 +25,54 @@ export class TropiPayController {
     private readonly tropiPayService: TropiPayService,
     private readonly esenciaService: EsenciasService,
     private readonly usuarioService: UsuariosService,
-    private readonly prisma: PrismaService
+    private readonly prisma: PrismaService,
   ) {}
+  config = {
+    clientId: process.env.TROPIPAY_CLIENT_ID,
+    clientSecret: process.env.TROPIPAY_CLIENT_SECRET,
+    scopes: [
+      'ALLOW_GET_PROFILE_DATA',
+      'ALLOW_PAYMENT_IN',
+      'ALLOW_EXTERNAL_CHARGE',
+      'KYC3_FULL_ALLOW',
+      'ALLOW_GET_BALANCE',
+      'ALLOW_GET_MOVEMENT_LIST',
+    ],
+    serverMode: 'Development' as ServerMode$1,
+  };
+  tpp = new Tropipay(this.config);
 
-  @Get('get')
-  async get() {
-    return await this.tropiPayService.getAccessToken();
-  }
   @Post('create-payment-card/:id')
-  async createPaymentCard(@Param('id') id: string) {
-    const ID = parseInt(id)
-    if(ID >= 1 && ID <= 4){
-      const esencia = this.esenciaService.getEsenciaById(Number(id));
+  @UseGuards(AccessGuard)
+  async createPaymentCard(
+    @Param('id') id: string,
+    @Body() datah: PaymentOperation|null,
+    @Request() req: { user: JWTUser },
+  ) {
+    const date = new Date();
+    const formattedDateTime = date.toLocaleString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    });
+    const ref = (await this.usuarioService.getUsuarioById(req.user.id)).email;
+    const esencia = await this.esenciaService.getEsenciaById(Number(id));
+    const payload = {
+      descripcion: esencia?esencia.descripcion:`${datah.esencia} Esencias`,
+      precio: esencia?Number(esencia.precio):datah.precio
     }
-    const esencia = this.esenciaService.getEsenciaById(Number(id));
-    return await this.tropiPayService.createPaymentCard({
-      reference: 'mayito2',
+    console.log(esencia)
+    console.log('data:',datah)
+    console.log(payload)
+    return await this.tpp.paymentCards.create({
+      reference: ref,
       concept: 'Esencias',
       favorite: true,
-      description: (await esencia).descripcion,
-      amount: (await esencia).precio,
+      description: esencia.descripcion,
+      amount: parseInt(esencia.precio),
       currency: 'USD',
       singleUse: true,
       reasonId: 4,
@@ -42,7 +83,7 @@ export class TropiPayController {
       urlNotification:
         //'https://webhook.site/a8b11a1a-e3b9-4811-9f0f-a0452647a269'
         'https://eons-back.onrender.com/tropipay/',
-      serviceDate: '2021-08-20',
+      serviceDate: formattedDateTime,
       client: null,
       directPayment: true,
       paymentMethods: ['EXT', 'TPP'],
@@ -70,22 +111,22 @@ export class TropiPayController {
       } else {
         epay = 240;
       }
-      const user = this.usuarioService.findOneByEmail(
-        data.data.reference,
-      );
+      const user = this.usuarioService.findOneByEmail(data.data.reference);
       (await user).esencia = (await user).esencia + epay;
       this.usuarioService.updateUsuario(await user, (await user).id);
-      return this.prisma.compra.create({data:{
-        email: data.data.reference,
-        bank_order: data.data.bankOrderCode,
-      }})
+      return this.prisma.compra.create({
+        data: {
+          email: data.data.reference,
+          bank_order: data.data.bankOrderCode,
+        },
+      });
     } else {
       console.log('Firma no válida');
     }
   }
 
   @Post('validate-payment')
-  async validatePayment (@Body() data:any){
-    return await this.tropiPayService.validateBankOrder(data)
+  async validatePayment(@Body() data: any) {
+    return await this.tropiPayService.validateBankOrder(data);
   }
 }
