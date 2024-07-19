@@ -9,7 +9,7 @@ import { Module } from '@nestjs/common';
         port: 587,
         auth: {
           user: 'garciaj1246@gmail.com',
-          pass: 'xhxf tcwe ttjb yzbz',
+          pass: 'rncd qcaw jkix ftir',
         },
       },
       defaults: {

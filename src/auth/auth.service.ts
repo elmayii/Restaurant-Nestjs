@@ -134,7 +134,7 @@ export class AuthService {
       <p><a href="${resetUrl}">Restablecer Contraseña</a></p>
       <p>Si no solicitaste este cambio, puedes ignorar este correo electrónico.</p>
       <p>Saludos,</p>
-      <p>Tu equipo</p>
+      <p>EONS</p>
     `;
 
     await this.mailerService.sendMail({
@@ -197,7 +197,7 @@ export class AuthService {
       <p><a href="${resetUrl}">Verificar Email</a></p>
       <p>Si no solicitaste este cambio, puedes ignorar este correo electrónico.</p>
       <p>Saludos,</p>
-      <p>Tu equipo</p>
+      <p>EONS</p>
     `;
 
     await this.mailerService.sendMail({

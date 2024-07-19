@@ -15,6 +15,7 @@ import { JWTUser } from 'src/lib/jwt';
 import { AccessGuard } from 'src/auth/auth.guard';
 import { Tropipay } from '@yosle/tropipayjs';
 import { ServerMode$1 } from './type/type';
+import { PaymentOperation } from './dto/paymentCheck';
 
 @Controller('tropipay')
 export class TropiPayController {
@@ -35,7 +36,7 @@ export class TropiPayController {
       'ALLOW_GET_BALANCE',
       'ALLOW_GET_MOVEMENT_LIST',
     ],
-    serverMode: 'Development' as ServerMode$1,
+    serverMode: 'Production' as ServerMode$1,
   };
   tpp = new Tropipay(this.config);
 
@@ -55,13 +56,17 @@ export class TropiPayController {
       hour12: true,
     });
     const ref = (await this.usuarioService.getUsuarioById(req.user.id)).email;
-    const esencia = this.esenciaService.getEsenciaById(Number(id));
+    const esencia = await this.esenciaService.getEsenciaById(Number(id));
+    const payload = {
+      descripcion: esencia.descripcion,
+      precio: Number(esencia.precio) * 100,
+    };
     return await this.tpp.paymentCards.create({
       reference: ref,
       concept: 'Esencias',
       favorite: true,
-      description: (await esencia).descripcion,
-      amount: Number((await esencia).precio),
+      description: payload.descripcion,
+      amount: payload.precio,
       currency: 'USD',
       singleUse: true,
       reasonId: 4,
@@ -78,6 +83,50 @@ export class TropiPayController {
       paymentMethods: ['EXT', 'TPP'],
     });
   }
+
+  @Post('create-payment-card')
+  @UseGuards(AccessGuard)
+  async createPaymentCustomCard(
+    @Body() datah: PaymentOperation,
+    @Request() req: { user: JWTUser },
+  ) {
+    const date = new Date();
+    const formattedDateTime = date.toLocaleString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    });
+    const ref = (await this.usuarioService.getUsuarioById(req.user.id)).email;
+    const payload = {
+      descripcion: `${datah.esencia} Esencia`,
+      precio: datah.precio * 100,
+    };
+    return await this.tpp.paymentCards.create({
+      reference: ref,
+      concept: 'Esencias',
+      favorite: true,
+      description: payload.descripcion,
+      amount: payload.precio,
+      currency: 'USD',
+      singleUse: true,
+      reasonId: 4,
+      expirationDays: 1,
+      lang: 'es',
+      urlSuccess: 'https://eons-main.vercel.app/payment',
+      urlFailed: 'https://eons-main.vercel.app/payment/failed',
+      urlNotification:
+        //'https://webhook.site/a8b11a1a-e3b9-4811-9f0f-a0452647a269'
+        'https://eons-back.onrender.com/tropipay/',
+      serviceDate: formattedDateTime,
+      client: null,
+      directPayment: true,
+      paymentMethods: ['EXT', 'TPP'],
+    });
+  }
+
   @Post()
   async validateSignature(@Body() data) {
     console.log(data.data.charges[0].clientEmail);
