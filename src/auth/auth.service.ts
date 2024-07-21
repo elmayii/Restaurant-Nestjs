@@ -1,13 +1,14 @@
 import {
   BadRequestException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { UsuariosService } from 'src/usuario/usuario.service';
 import { RegisterDto } from './dto/register.dto';
 
 import * as bcryptjs from 'bcryptjs';
-import { LoginDto } from './dto/login.dto';
+import { LoginDto, LogOutDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ResetPasswordRequestDto } from './dto/reset-password-request.dto';
@@ -15,6 +16,8 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { usuario } from '@prisma/client';
 import { jwtConstants } from './constants/jwt.constant';
 import { WebsocketGateway } from 'src/websockets/websocket.gateway';
+import { HttpService } from '@nestjs/axios';
+import { map } from 'rxjs';
 
 @Injectable()
 export class AuthService {
@@ -23,9 +26,10 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
     private readonly notificationsGateway: WebsocketGateway,
+    private readonly http: HttpService,
   ) {}
 
-  async register({ email, password }: RegisterDto) {
+  async register({ email, password, type }: RegisterDto) {
     let user = await this.userService.findOneByEmail(email);
 
     if (user) {
@@ -35,7 +39,7 @@ export class AuthService {
     user = await this.userService.createUsuario({
       email,
       password: await bcryptjs.hash(password, 10),
-      type: 'mail',
+      type,
     });
 
     return this.sendUser(user);
@@ -87,6 +91,39 @@ export class AuthService {
     }
 
     return this.sendUser(user);
+  }
+
+  async logOut({ providerId,userId }: LogOutDto) {
+    const user = await this.userService.findOneById(userId);
+    if (!user) {
+      throw new NotFoundException('session not found');
+    }
+
+    const type = user.type;
+    if (type == 'google') {
+      const params = {
+        token:providerId,
+      };
+      try {
+        return await this.http
+        .post(`https://oauth2.googleapis.com/revoke`,{
+        params,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        })
+        .pipe(map((response) => response.data))
+        .toPromise();
+      } catch (error) {
+        console.log(error)
+      }
+      
+    }
+    else if(type == 'microsoft'){
+      
+    }
+
+    return {message:'User Log-out'}
   }
 
   private async sendUser(user: usuario) {

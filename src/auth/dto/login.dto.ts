@@ -9,3 +9,15 @@ export class LoginDto {
   @MinLength(6)
   password?: string;
 }
+
+export class LogOutData {
+  @IsString()
+  providerId: string;
+}
+export class LogOutDto {
+  @IsString()
+  providerId: string;
+
+  @IsString()
+  userId: string
+}
