@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
-import { LoginDto, LogOutData, LogOutDto } from './dto/login.dto';
+import { LoginDto, LogOutData } from './dto/login.dto';
 import { AccessGuard } from './auth.guard';
 import { RefreshGuard } from './auth.refresGuard';
 import { ResetPasswordRequestDto } from './dto/reset-password-request.dto';
@@ -59,14 +59,11 @@ export class AuthController {
 
   @Post('logout')
   @UseGuards(AccessGuard)
-  logOut(
-    @Body() logout: LogOutData,
-    @Request() req: { user: JWTUser }
-    ) {
-      const data = {
-        providerId:logout.providerId,
-        userId:req.user.id
-      }
+  logOut(@Body() logout: LogOutData, @Request() req: { user: JWTUser }) {
+    const data = {
+      providerId: logout.providerId,
+      userId: req.user.id,
+    };
     return this.authService.logOut(data);
   }
 

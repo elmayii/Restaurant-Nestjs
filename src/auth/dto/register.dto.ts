@@ -5,7 +5,7 @@ enum TYPE {
   mail,
   apple,
   microsoft,
-  google
+  google,
 }
 export class RegisterDto {
   @IsEmail()
@@ -17,5 +17,5 @@ export class RegisterDto {
   password?: string;
 
   @IsEnum(TYPE)
-  type?:string;
+  type?: string;
 }

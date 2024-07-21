@@ -49,15 +49,14 @@ export class AccessGuard implements CanActivate {
             message: 'Recuerde que usted no ha verificado su cuenta',
           });
           throw new ForbiddenException('Email not verified');
-        }
-        else{
+        } else {
           throw new UnauthorizedException();
         }
       }
 
       request.user = payload;
     } catch (err) {
-      throw err
+      throw err;
     }
 
     return true;

@@ -93,7 +93,7 @@ export class AuthService {
     return this.sendUser(user);
   }
 
-  async logOut({ providerId,userId }: LogOutDto) {
+  async logOut({ providerId, userId }: LogOutDto) {
     const user = await this.userService.findOneById(userId);
     if (!user) {
       throw new NotFoundException('session not found');
@@ -102,28 +102,25 @@ export class AuthService {
     const type = user.type;
     if (type == 'google') {
       const params = {
-        token:providerId,
+        token: providerId,
       };
       try {
         return await this.http
-        .post(`https://oauth2.googleapis.com/revoke`,{
-        params,
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        })
-        .pipe(map((response) => response.data))
-        .toPromise();
+          .post(`https://oauth2.googleapis.com/revoke`, {
+            params,
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+          })
+          .pipe(map((response) => response.data))
+          .toPromise();
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
-      
-    }
-    else if(type == 'microsoft'){
-      
+    } else if (type == 'microsoft') {
     }
 
-    return {message:'User Log-out'}
+    return { message: 'User Log-out' };
   }
 
   private async sendUser(user: usuario) {
