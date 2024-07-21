@@ -1,6 +1,12 @@
 import { Transform } from 'class-transformer';
-import { IsEmail, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsEnum, IsString, MinLength } from 'class-validator';
 
+enum TYPE {
+  mail,
+  apple,
+  microsoft,
+  google
+}
 export class RegisterDto {
   @IsEmail()
   email: string;
@@ -9,4 +15,7 @@ export class RegisterDto {
   @IsString()
   @MinLength(6)
   password?: string;
+
+  @IsEnum(TYPE)
+  type?:string;
 }

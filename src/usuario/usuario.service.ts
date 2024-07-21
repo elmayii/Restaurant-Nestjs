@@ -41,6 +41,14 @@ export class UsuariosService {
     });
   }
 
+  async findOneById(id: string) {
+    return this.prisma.usuario.findFirst({
+      where: {
+        id,
+      },
+    });
+  }
+
   async findUnverifiedUsers(): Promise<usuario[]> {
     return this.prisma.usuario.findMany({
       where: {

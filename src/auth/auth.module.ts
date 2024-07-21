@@ -6,6 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { MailModule } from 'src/mailer/mail.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { WebsocketModule } from 'src/websockets/websocket.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   controllers: [AuthController],
@@ -18,6 +19,7 @@ import { WebsocketModule } from 'src/websockets/websocket.module';
     MailModule,
     PrismaModule,
     WebsocketModule,
+    HttpModule
   ],
   exports: [AuthService],
 })

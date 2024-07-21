@@ -11,12 +11,13 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
-import { LoginDto } from './dto/login.dto';
+import { LoginDto, LogOutData, LogOutDto } from './dto/login.dto';
 import { AccessGuard } from './auth.guard';
 import { RefreshGuard } from './auth.refresGuard';
 import { ResetPasswordRequestDto } from './dto/reset-password-request.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { Oauth2Dto as Oauth2Dto } from './dto/oauth2.dto';
+import { JWTUser } from 'src/lib/jwt';
 
 @Controller('auth')
 export class AuthController {
@@ -54,6 +55,19 @@ export class AuthController {
   @UseGuards(RefreshGuard)
   recoverSection(@Headers('authorization') refreshToken: string) {
     return this.authService.recoverSection(refreshToken);
+  }
+
+  @Post('logout')
+  @UseGuards(AccessGuard)
+  logOut(
+    @Body() logout: LogOutData,
+    @Request() req: { user: JWTUser }
+    ) {
+      const data = {
+        providerId:logout.providerId,
+        userId:req.user.id
+      }
+    return this.authService.logOut(data);
   }
 
   @Get('profile')

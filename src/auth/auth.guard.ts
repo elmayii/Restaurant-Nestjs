@@ -31,6 +31,7 @@ export class AccessGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.accessSecret,
       });
+      //console.log(payload)
 
       const user = await this.prisma.usuario.findFirst({
         where: { id: payload.id },
@@ -47,17 +48,16 @@ export class AccessGuard implements CanActivate {
           this.notificationsGateway.notifyUser(user.id, {
             message: 'Recuerde que usted no ha verificado su cuenta',
           });
+          throw new ForbiddenException('Email not verified');
         }
-        throw new ForbiddenException('Email not verified');
+        else{
+          throw new UnauthorizedException();
+        }
       }
 
       request.user = payload;
     } catch (err) {
-      if (err instanceof ForbiddenException) {
-        throw err;
-      } else {
-        throw new UnauthorizedException();
-      }
+      throw err
     }
 
     return true;
