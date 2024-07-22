@@ -19,7 +19,7 @@ import { HttpModule } from '@nestjs/axios';
     MailModule,
     PrismaModule,
     WebsocketModule,
-    HttpModule
+    HttpModule,
   ],
   exports: [AuthService],
 })

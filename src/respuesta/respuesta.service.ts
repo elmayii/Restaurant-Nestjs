@@ -4,12 +4,14 @@ import { EspiritusService } from 'src/espiritu/espiritu.service';
 import { userThrows } from 'src/lanzamientos/lanzamiento';
 import { actions, parados, specials, validTypes } from 'src/lib/constants';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { WebsocketGateway } from 'src/websockets/websocket.gateway';
 
 @Injectable()
 export class RespuestasService {
   constructor(
     private prisma: PrismaService,
     private espiritu: EspiritusService,
+    private notificationsGateway: WebsocketGateway,
   ) {}
 
   async getAllRespuestas(): Promise<respuesta[]> {
@@ -174,6 +176,20 @@ export class RespuestasService {
         const result = userThrows.throws[user.email].throws
           .map((answer) => answer.throw)
           .join(';');
+        await this.prisma.usuario.update({
+          where: { id: user.id },
+          data: { esencia: user.esencia - 1 },
+        });
+        await this.prisma.notificaciones.create({
+          data: {
+            descripcion: `Se le ha descontado 1 de esencia por el servicio`,
+            id_usuario: user.id,
+          },
+        });
+
+        this.notificationsGateway.notifyUser(user.id, {
+          message: `Se le ha descontado 1 de esencia por el servicio`,
+        });
         userThrows.throws[user.email] = void 0;
         return result;
       } else {

@@ -17,5 +17,5 @@ export class RegisterDto {
   password?: string;
 
   @IsEnum(TYPE)
-  type?:string;
+  type?: string;
 }

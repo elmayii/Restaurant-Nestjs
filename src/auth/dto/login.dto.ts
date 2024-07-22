@@ -19,5 +19,5 @@ export class LogOutDto {
   providerId: string;
 
   @IsString()
-  userId: string
+  userId: string;
 }
