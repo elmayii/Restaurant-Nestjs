@@ -16,7 +16,11 @@ export class AccessGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
+<<<<<<< HEAD
+    //private readonly notificationsService: NotificationsService
+=======
     private readonly notificationsService: NotificationsService,
+>>>>>>> 04fcfdf12c706cecfaad4d919c90eb0b3cb65738
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
