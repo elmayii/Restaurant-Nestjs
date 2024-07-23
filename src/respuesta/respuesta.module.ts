@@ -9,6 +9,6 @@ import { NotificationsModule } from 'src/notifications/notifications.module';
 @Module({
   controllers: [RespuestasController],
   providers: [RespuestasService, EspiritusService],
-  imports: [PrismaModule, WebsocketModule,NotificationsModule],
+  imports: [PrismaModule, WebsocketModule, NotificationsModule],
 })
 export class RespuestaModule {}

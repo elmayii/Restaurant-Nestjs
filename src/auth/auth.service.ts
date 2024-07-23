@@ -15,10 +15,8 @@ import { ResetPasswordRequestDto } from './dto/reset-password-request.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 import { notificaciones, usuario } from '@prisma/client';
 import { jwtConstants } from './constants/jwt.constant';
-import { WebsocketGateway } from 'src/websockets/websocket.gateway';
 import { HttpService } from '@nestjs/axios';
 import { map } from 'rxjs';
-import { JWTUser } from 'src/lib/jwt';
 import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
@@ -28,7 +26,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
     private readonly http: HttpService,
-    private readonly notificationsService: NotificationsService
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async register({ email, password, type }: RegisterDto) {
@@ -147,11 +145,10 @@ export class AuthService {
     };
   }
 
-  private async sendProfile(user: usuario,notificaciones: notificaciones[]) {
-
+  private async sendProfile(user: usuario, notificaciones: notificaciones[]) {
     return {
       essence: user.esencia,
-      notificaciones
+      notificaciones,
     };
   }
 
@@ -266,12 +263,13 @@ export class AuthService {
         user.isEmailVerified = true;
         await this.userService.updateUsuario(user, user.id);
         this.notificationsService.createNotification({
-          nombre: "Cuenta Verificada",
+          nombre: 'Cuenta Verificada',
           id_usuario: user.id,
           tipo: 'validacion',
-          descripcion: "Su cuenta ha sido verificada con exito, ahora puede consumir los servicios disponibles",
-          estado:false
-        })
+          descripcion:
+            'Su cuenta ha sido verificada con exito, ahora puede consumir los servicios disponibles',
+          estado: false,
+        });
         return { success: true };
       } else {
         throw new Error('Correo electrónico no encontrado');
@@ -303,12 +301,13 @@ export class AuthService {
     }
   }
 
-  async getProfile(userId:string) {
+  async getProfile(userId: string) {
     try {
-      const notificaciones = await this.notificationsService.findAllUnreadNotifications(userId)
-      const user = await this.userService.findOneById(userId)
+      const notificaciones =
+        await this.notificationsService.findAllUnreadNotifications(userId);
+      const user = await this.userService.findOneById(userId);
       if (notificaciones && user) {
-        return this.sendProfile(user,notificaciones);
+        return this.sendProfile(user, notificaciones);
       } else {
         throw new Error('Correo electrónico no encontrado');
       }

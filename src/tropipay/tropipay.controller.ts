@@ -129,7 +129,6 @@ export class TropiPayController {
 
   @Post()
   async validateSignature(@Body() data) {
-    console.log(data.data.charges[0].clientEmail);
     const { bankOrderCode, originalCurrencyAmount, signaturev2 } = data.data;
     const clientId = process.env.TROPIPAY_CLIENT_ID;
     const clientSecret = process.env.TROPIPAY_CLIENT_SECRET;
@@ -140,14 +139,21 @@ export class TropiPayController {
 
     if (expectedSignature === signaturev2) {
       let epay = 0;
-      if (data.data.charges[0].amount === 199) {
+      if (data.data.charges[0].amount === 499) {
+        epay = 5;
+      } else if (data.data.charges[0].amount === 1440) {
         epay = 15;
-      } else if (data.data.charges[0].amount === 399) {
-        epay = 40;
-      } else if (data.data.charges[0].amount === 799) {
+      } else if (data.data.charges[0].amount === 2350) {
+        epay = 25;
+      } else if (data.data.charges[0].amount === 4599) {
+        epay = 50;
+      } else if (data.data.charges[0].amount === 8999) {
         epay = 100;
+      } else if (data.data.charges[0].amount === 21250) {
+        epay = 250;
       } else {
-        epay = 240;
+        const match = data.data.paymentcard.description.match(/\d+/);
+        epay = match ? parseInt(match[0], 10) : null;
       }
       const user = this.usuarioService.findOneByEmail(data.data.reference);
       (await user).esencia = (await user).esencia + epay;

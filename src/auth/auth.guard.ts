@@ -9,7 +9,6 @@ import { Request } from 'express';
 import { jwtConstants } from './constants/jwt.constant';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { WebsocketGateway } from 'src/websockets/websocket.gateway';
 import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
@@ -17,7 +16,11 @@ export class AccessGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
+<<<<<<< HEAD
     //private readonly notificationsService: NotificationsService
+=======
+    private readonly notificationsService: NotificationsService,
+>>>>>>> 04fcfdf12c706cecfaad4d919c90eb0b3cb65738
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -32,7 +35,6 @@ export class AccessGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.accessSecret,
       });
-      //console.log(payload)
 
       const user = await this.prisma.usuario.findFirst({
         where: { id: payload.id },
@@ -40,16 +42,13 @@ export class AccessGuard implements CanActivate {
 
       if (!user || !user.isEmailVerified) {
         if (user) {
-          // this.notificationsService.createNotification({
-          //   nombre: "Cuenta sin Verificar",
-          //   id_usuario: user.id,
-          //   tipo: 'validacion',
-          //   descripcion: `Aún no ha validado su cuenta`,
-          //   estado:false
-          // })
-          // this.notificationsGateway.notifyUser(user.id, {
-          //   message: 'Recuerde que usted no ha verificado su cuenta',
-          // });
+          this.notificationsService.createNotification({
+            nombre: 'Cuenta sin Verificar',
+            id_usuario: user.id,
+            tipo: 'validacion',
+            descripcion: `Aún no ha validado su cuenta`,
+            estado: false,
+          });
           throw new ForbiddenException('Email not verified');
         } else {
           throw new UnauthorizedException();

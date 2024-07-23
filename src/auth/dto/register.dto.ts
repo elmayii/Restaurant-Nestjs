@@ -5,7 +5,7 @@ enum TYPE {
   'mail',
   'apple',
   'microsoft',
-  'google'
+  'google',
 }
 export class RegisterDto {
   @IsEmail()
