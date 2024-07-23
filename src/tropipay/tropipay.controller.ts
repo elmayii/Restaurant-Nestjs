@@ -72,8 +72,8 @@ export class TropiPayController {
       reasonId: 4,
       expirationDays: 1,
       lang: 'es',
-      urlSuccess: 'https://eons-main.vercel.app/payment',
-      urlFailed: 'https://eons-main.vercel.app/payment/failed',
+      urlSuccess: 'https://www.eons.es/payment',
+      urlFailed: 'https://www.eons.es/payment/failed',
       urlNotification:
         //'https://webhook.site/a8b11a1a-e3b9-4811-9f0f-a0452647a269'
         'https://eons-back.onrender.com/tropipay/',
@@ -115,8 +115,8 @@ export class TropiPayController {
       reasonId: 4,
       expirationDays: 1,
       lang: 'es',
-      urlSuccess: 'https://eons-main.vercel.app/payment',
-      urlFailed: 'https://eons-main.vercel.app/payment/failed',
+      urlSuccess: 'https://www.eons.es/payment',
+      urlFailed: 'https://www.eons.es/payment/failed',
       urlNotification:
         //'https://webhook.site/a8b11a1a-e3b9-4811-9f0f-a0452647a269'
         'https://eons-back.onrender.com/tropipay/',

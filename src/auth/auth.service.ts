@@ -167,7 +167,7 @@ export class AuthService {
       },
     );
 
-    const resetUrl = `https://eons-main.vercel.app/auth/change-password/${token}/${email}`;
+    const resetUrl = `https://www.eons.es/auth/change-password/${token}/${email}`;
 
     const htmlContent = `
       <p>Hola ${user.email},</p>
