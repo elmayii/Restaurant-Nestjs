@@ -21,8 +21,6 @@ export class SocketGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request: Socket = context.switchToWs().getClient<Socket>();
-    console.log('eeeess:', request);
-    //const request = context.switchToHttp().getRequest();
 
     const token = request.handshake.auth.token;
     if (!token) {

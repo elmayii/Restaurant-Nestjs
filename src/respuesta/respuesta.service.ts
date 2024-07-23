@@ -13,7 +13,7 @@ export class RespuestasService {
     private prisma: PrismaService,
     private espiritu: EspiritusService,
     private notificationsGateway: WebsocketGateway,
-    private notificationsService: NotificationsService
+    private notificationsService: NotificationsService,
   ) {}
 
   async getAllRespuestas(): Promise<respuesta[]> {
@@ -182,20 +182,14 @@ export class RespuestasService {
           where: { id: user.id },
           data: { esencia: user.esencia - 1 },
         });
-        // await this.prisma.notificaciones.create({
-        //   data: {
-        //     descripcion: `Se le ha descontado 1 de esencia por el servicio`,
-        //     id_usuario: user.id,
-        //   },
-        // });
 
-        // this.notificationsService.createNotification({
-        //   nombre: "Cuenta Verificada",
-        //   id_usuario: user.id,
-        //   tipo: 'validacion',
-        //   descripcion: "Su cuenta ha sido verificada con exito, ahora puede consumir los servicios disponibles",
-        //   estado:false
-        // })
+        this.notificationsService.createNotification({
+          nombre: 'Cuenta Verificada',
+          id_usuario: user.id,
+          tipo: 'validacion',
+          descripcion: 'Se le ha descontado 1 de esencia por el servicio',
+          estado: false,
+        });
         userThrows.throws[user.email] = void 0;
         return result;
       } else {

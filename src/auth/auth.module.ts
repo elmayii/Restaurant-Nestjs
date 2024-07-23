@@ -5,7 +5,6 @@ import { UsuarioModule } from 'src/usuario/usuario.module';
 import { JwtModule } from '@nestjs/jwt';
 import { MailModule } from 'src/mailer/mail.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
-import { WebsocketModule } from 'src/websockets/websocket.module';
 import { HttpModule } from '@nestjs/axios';
 import { NotificationsModule } from 'src/notifications/notifications.module';
 
@@ -20,7 +19,7 @@ import { NotificationsModule } from 'src/notifications/notifications.module';
     MailModule,
     PrismaModule,
     HttpModule,
-    NotificationsModule
+    NotificationsModule,
   ],
   exports: [AuthService],
 })

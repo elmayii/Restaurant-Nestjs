@@ -5,36 +5,38 @@ import { NotificationDto, patchNotification } from './dto/NotificationsDto';
 
 @Injectable()
 export class NotificationsService {
-    constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-    async findAllUnreadNotifications(id:string): Promise<notificaciones[]> {
-        return this.prisma.notificaciones.findMany({
-          where: {
-            id_usuario : id,
-            estado:false
-          },
-        });
-    }
-    
-    async updateStateNotification(data:patchNotification): Promise<notificaciones> {
-        return this.prisma.notificaciones.update({
-          where: {
-            id : data.id,
-          },
-          data: {
-            estado: data.state
-          }
-        });
-    }
+  async findAllUnreadNotifications(id: string): Promise<notificaciones[]> {
+    return this.prisma.notificaciones.findMany({
+      where: {
+        id_usuario: id,
+        estado: false,
+      },
+    });
+  }
 
-    async createNotification(data:NotificationDto): Promise<notificaciones> {
-        return this.prisma.notificaciones.create({
-          data: {
-            id_usuario: data.id_usuario,
-            descripcion: data.descripcion,
-            estado: data.estado,
-            date: new Date()
-          }
-        });
-    }
+  async updateStateNotification(
+    data: patchNotification,
+  ): Promise<notificaciones> {
+    return this.prisma.notificaciones.update({
+      where: {
+        id: data.id,
+      },
+      data: {
+        estado: data.state,
+      },
+    });
+  }
+
+  async createNotification(data: NotificationDto): Promise<notificaciones> {
+    return this.prisma.notificaciones.create({
+      data: {
+        id_usuario: data.id_usuario,
+        descripcion: data.descripcion,
+        estado: data.estado,
+        date: new Date(),
+      },
+    });
+  }
 }

@@ -21,7 +21,7 @@ export class PreguntasController {
   @Get()
   @UseGuards(AccessGuard)
   async getAllPreguntas(@Request() req: any, @Query('type') type: string) {
-    return this.preguntasService.getAllPreguntas(req.user,type);
+    return this.preguntasService.getAllPreguntas(req.user, type);
   }
 
   @Post()

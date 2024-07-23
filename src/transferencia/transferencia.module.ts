@@ -6,7 +6,7 @@ import { WebsocketModule } from 'src/websockets/websocket.module';
 import { NotificationsModule } from 'src/notifications/notifications.module';
 
 @Module({
-  imports: [PrismaModule, WebsocketModule,NotificationsModule],
+  imports: [PrismaModule, WebsocketModule, NotificationsModule],
   controllers: [TransferenciaController],
   providers: [TransferenciaService],
 })

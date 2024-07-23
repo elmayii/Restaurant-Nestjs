@@ -1,15 +1,13 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTransferenciaDto } from 'src/lib/dtos';
-import { WebsocketGateway } from 'src/websockets/websocket.gateway';
 import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class TransferenciaService {
   constructor(
     private prisma: PrismaService,
-    private notificationsGateway: WebsocketGateway,
-    private notificationsService: NotificationsService
+    private notificationsService: NotificationsService,
   ) {}
 
   async createTransferencia(
@@ -52,20 +50,20 @@ export class TransferenciaService {
     ]);
 
     this.notificationsService.createNotification({
-      nombre: "Transferencia",
+      nombre: 'Transferencia',
       id_usuario: receiverUser.id,
       tipo: 'transferencia',
       descripcion: `Usted ha recibido ${amount} esencias de ${sender.email}`,
-      estado:false
-    })
+      estado: false,
+    });
 
     this.notificationsService.createNotification({
-      nombre: "Transferencia",
-      id_usuario: userId,
+      nombre: 'Transferencia',
+      id_usuario: sender.id,
       tipo: 'transferencia',
-      descripcion: `Usted ha enviado ${amount} esencias a ${sender.email}`,
-      estado:false
-    })
+      descripcion: `Usted ha enviado ${amount} esencias a ${receiverUser.email}`,
+      estado: false,
+    });
 
     return { message: 'Transfer successful' };
   }

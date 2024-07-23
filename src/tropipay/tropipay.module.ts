@@ -18,7 +18,7 @@ import { NotificationsService } from 'src/notifications/notifications.service';
     WebsocketGateway,
     PrismaService,
     JwtService,
-    NotificationsService
+    NotificationsService,
   ],
   controllers: [TropiPayController],
   imports: [HttpModule, PrismaModule],
