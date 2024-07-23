@@ -87,7 +87,7 @@ export class AuthController {
   }
 
   @Get('verify-email')
-  @Redirect('https://eons-main.vercel.app/services/true')
+  @Redirect('https://www.eons.es/services/true')
   async verifyEmail(@Query('token') token: string) {
     return this.authService.verifyEmail(token);
   }
