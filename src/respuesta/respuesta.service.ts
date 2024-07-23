@@ -3,6 +3,7 @@ import { espiritu, respuesta, respuesta_dia } from '@prisma/client';
 import { EspiritusService } from 'src/espiritu/espiritu.service';
 import { userThrows } from 'src/lanzamientos/lanzamiento';
 import { actions, parados, specials, validTypes } from 'src/lib/constants';
+import { NotificationsService } from 'src/notifications/notifications.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { WebsocketGateway } from 'src/websockets/websocket.gateway';
 
@@ -12,6 +13,7 @@ export class RespuestasService {
     private prisma: PrismaService,
     private espiritu: EspiritusService,
     private notificationsGateway: WebsocketGateway,
+    private notificationsService: NotificationsService
   ) {}
 
   async getAllRespuestas(): Promise<respuesta[]> {
@@ -180,16 +182,20 @@ export class RespuestasService {
           where: { id: user.id },
           data: { esencia: user.esencia - 1 },
         });
-        await this.prisma.notificaciones.create({
-          data: {
-            descripcion: `Se le ha descontado 1 de esencia por el servicio`,
-            id_usuario: user.id,
-          },
-        });
+        // await this.prisma.notificaciones.create({
+        //   data: {
+        //     descripcion: `Se le ha descontado 1 de esencia por el servicio`,
+        //     id_usuario: user.id,
+        //   },
+        // });
 
-        this.notificationsGateway.notifyUser(user.id, {
-          message: `Se le ha descontado 1 de esencia por el servicio`,
-        });
+        // this.notificationsService.createNotification({
+        //   nombre: "Cuenta Verificada",
+        //   id_usuario: user.id,
+        //   tipo: 'validacion',
+        //   descripcion: "Su cuenta ha sido verificada con exito, ahora puede consumir los servicios disponibles",
+        //   estado:false
+        // })
         userThrows.throws[user.email] = void 0;
         return result;
       } else {

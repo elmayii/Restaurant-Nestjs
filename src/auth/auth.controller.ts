@@ -68,9 +68,9 @@ export class AuthController {
   }
 
   @Get('profile')
-  @UseGuards(RefreshGuard)
+  @UseGuards(AccessGuard)
   profile(@Request() req) {
-    return req.user;
+    return this.authService.getProfile(req.id)
   }
 
   @Post('request-password-reset')

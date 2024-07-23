@@ -13,11 +13,13 @@ import { JwtService } from '@nestjs/jwt';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ResetPasswordRequestDto } from './dto/reset-password-request.dto';
 import { MailerService } from '@nestjs-modules/mailer';
-import { usuario } from '@prisma/client';
+import { notificaciones, usuario } from '@prisma/client';
 import { jwtConstants } from './constants/jwt.constant';
 import { WebsocketGateway } from 'src/websockets/websocket.gateway';
 import { HttpService } from '@nestjs/axios';
 import { map } from 'rxjs';
+import { JWTUser } from 'src/lib/jwt';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class AuthService {
@@ -25,8 +27,8 @@ export class AuthService {
     private readonly userService: UsuariosService,
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
-    private readonly notificationsGateway: WebsocketGateway,
     private readonly http: HttpService,
+    private readonly notificationsService: NotificationsService
   ) {}
 
   async register({ email, password, type }: RegisterDto) {
@@ -145,6 +147,14 @@ export class AuthService {
     };
   }
 
+  private async sendProfile(user: usuario,notificaciones: notificaciones[]) {
+
+    return {
+      essence: user.esencia,
+      notificaciones
+    };
+  }
+
   async requestPasswordReset({ email }: ResetPasswordRequestDto) {
     const user = await this.userService.findOneByEmail(email);
 
@@ -255,9 +265,13 @@ export class AuthService {
       if (user) {
         user.isEmailVerified = true;
         await this.userService.updateUsuario(user, user.id);
-        this.notificationsGateway.notifyUser(user.id, {
-          message: 'Su correo ha sido verificado',
-        });
+        this.notificationsService.createNotification({
+          nombre: "Cuenta Verificada",
+          id_usuario: user.id,
+          tipo: 'validacion',
+          descripcion: "Su cuenta ha sido verificada con exito, ahora puede consumir los servicios disponibles",
+          estado:false
+        })
         return { success: true };
       } else {
         throw new Error('Correo electrónico no encontrado');
@@ -281,6 +295,20 @@ export class AuthService {
       const user = await this.userService.findOneByEmail(email);
       if (user) {
         return this.sendUser(user);
+      } else {
+        throw new Error('Correo electrónico no encontrado');
+      }
+    } catch (error) {
+      throw new Error('Token inválido o expirado');
+    }
+  }
+
+  async getProfile(userId:string) {
+    try {
+      const notificaciones = await this.notificationsService.findAllUnreadNotifications(userId)
+      const user = await this.userService.findOneById(userId)
+      if (notificaciones && user) {
+        return this.sendProfile(user,notificaciones);
       } else {
         throw new Error('Correo electrónico no encontrado');
       }

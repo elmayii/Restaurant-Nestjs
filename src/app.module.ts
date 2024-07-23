@@ -16,6 +16,9 @@ import { UserCleanupService } from './user-cleanup/user-cleanup.service';
 import { TransferenciaModule } from './transferencia/transferencia.module';
 import { WebsocketModule } from './websockets/websocket.module';
 import { EsenciaModule } from './esencia/esencia.module';
+import { NotificationsService } from './notifications/notifications.service';
+import { NotificationsController } from './notifications/notifications.controller';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -35,7 +38,9 @@ import { EsenciaModule } from './esencia/esencia.module';
     EsenciaModule,
     TransferenciaModule,
     WebsocketModule,
+    NotificationsModule
   ],
   providers: [UserCleanupService],
+  controllers: [],
 })
 export class AppModule {}
