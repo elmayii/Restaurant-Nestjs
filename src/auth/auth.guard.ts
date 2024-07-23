@@ -10,13 +10,14 @@ import { jwtConstants } from './constants/jwt.constant';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { WebsocketGateway } from 'src/websockets/websocket.gateway';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class AccessGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
-    private readonly notificationsGateway: WebsocketGateway,
+    // private readonly notificationsService: NotificationsService
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -39,15 +40,16 @@ export class AccessGuard implements CanActivate {
 
       if (!user || !user.isEmailVerified) {
         if (user) {
-          this.prisma.notificaciones.create({
-            data: {
-              descripcion: 'Recuerde que usted no ha verificado su cuenta',
-              id_usuario: user.id,
-            },
-          });
-          this.notificationsGateway.notifyUser(user.id, {
-            message: 'Recuerde que usted no ha verificado su cuenta',
-          });
+          // this.notificationsService.createNotification({
+          //   nombre: "Cuenta sin Verificar",
+          //   id_usuario: user.id,
+          //   tipo: 'validacion',
+          //   descripcion: `Aún no ha validado su cuenta`,
+          //   estado:false
+          // })
+          // this.notificationsGateway.notifyUser(user.id, {
+          //   message: 'Recuerde que usted no ha verificado su cuenta',
+          // });
           throw new ForbiddenException('Email not verified');
         } else {
           throw new UnauthorizedException();

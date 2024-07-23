@@ -7,6 +7,7 @@ import { MailModule } from 'src/mailer/mail.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { WebsocketModule } from 'src/websockets/websocket.module';
 import { HttpModule } from '@nestjs/axios';
+import { NotificationsModule } from 'src/notifications/notifications.module';
 
 @Module({
   controllers: [AuthController],
@@ -18,8 +19,8 @@ import { HttpModule } from '@nestjs/axios';
     }),
     MailModule,
     PrismaModule,
-    WebsocketModule,
     HttpModule,
+    NotificationsModule
   ],
   exports: [AuthService],
 })

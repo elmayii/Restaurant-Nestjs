@@ -8,6 +8,7 @@ import { UsuariosService } from 'src/usuario/usuario.service';
 import { WebsocketGateway } from 'src/websockets/websocket.gateway';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Module({
   providers: [
@@ -17,6 +18,7 @@ import { JwtService } from '@nestjs/jwt';
     WebsocketGateway,
     PrismaService,
     JwtService,
+    NotificationsService
   ],
   controllers: [TropiPayController],
   imports: [HttpModule, PrismaModule],

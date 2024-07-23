@@ -23,9 +23,9 @@ model pregunta {
   descripcion String?   @db.VarChar
   respuesta   String?   @db.VarChar
   id_usuario  String?   @db.VarChar
+  fecha       DateTime? @db.Date
   tipo        String?   @db.VarChar
   favorito    Boolean?  @default(false)
-  fecha       DateTime? @db.Date
   usuario     usuario?  @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "id_usuario")
 }
 
@@ -127,6 +127,8 @@ model notificaciones {
   id_usuario  String?  @db.VarChar
   descripcion String?  @db.VarChar
   estado      Boolean? @default(false)
-  usuario     usuario? @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction)
   date        DateTime @default(now())
+  nombre      String?  @db.VarChar
+  tipo        String?  @db.VarChar
+  usuario     usuario? @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
