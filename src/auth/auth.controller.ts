@@ -70,7 +70,7 @@ export class AuthController {
   @Get('profile')
   @UseGuards(AccessGuard)
   profile(@Request() req) {
-    return this.authService.getProfile(req.id)
+    return this.authService.getProfile(req?.user?.id)
   }
 
   @Post('request-password-reset')
