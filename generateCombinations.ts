@@ -19,7 +19,7 @@ async function main() {
           const id = `${valores[i]}${valores[j]}${valores[k]}${valores[l]}`;
           const respuesta = `Primer lanzamiento: ${significados[valores[i]]}, segundo lanzamiento: ${significados[valores[j]]}, tercer lanzamiento: ${significados[valores[k]]}, cuarto lanzamiento: ${significados[valores[l]]}`;
 
-          await prisma.respuesta.create({
+          await prisma.respuesta_dia.create({
             data: {
               id,
               respuesta,
