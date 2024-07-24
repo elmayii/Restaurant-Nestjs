@@ -69,7 +69,7 @@ function main() {
                     if (!(l < 4)) return [3 /*break*/, 7];
                     id = "".concat(valores[i]).concat(valores[j]).concat(valores[k]).concat(valores[l]);
                     respuesta = "Primer lanzamiento: ".concat(significados[valores[i]], ", segundo lanzamiento: ").concat(significados[valores[j]], ", tercer lanzamiento: ").concat(significados[valores[k]], ", cuarto lanzamiento: ").concat(significados[valores[l]]);
-                    return [4 /*yield*/, prisma.respuesta.create({
+                    return [4 /*yield*/, prisma.respuesta_dia.create({
                             data: {
                                 id: id,
                                 respuesta: respuesta,
