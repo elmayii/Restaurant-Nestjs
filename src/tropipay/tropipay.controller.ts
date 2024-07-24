@@ -119,7 +119,7 @@ export class TropiPayController {
       urlFailed: 'https://www.eons.es/payment/failed',
       urlNotification:
         //'https://webhook.site/a8b11a1a-e3b9-4811-9f0f-a0452647a269'
-        'https://eons-service.onrender.com/tropipay/',
+        'https://eons-services.onrender.com/tropipay/',
       serviceDate: formattedDateTime,
       client: null,
       directPayment: true,

@@ -231,7 +231,7 @@ export class AuthService {
       expiresIn: '1h',
       secret: jwtConstants.accessSecret,
     });
-    const resetUrl = `https://eons-service.onrender.com/auth/verify-email/?token=${token}`;
+    const resetUrl = `https://eons-services.onrender.com/auth/verify-email/?token=${token}`;
     const htmlContent = `
       <p>Hola ${email},</p>
       <p>Por favor verifica tu correo electrónico haciendo clic en el siguiente enlace:</p>
