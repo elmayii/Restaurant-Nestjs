@@ -16,7 +16,7 @@ import { AccessGuard } from './auth.guard';
 import { RefreshGuard } from './auth.refresGuard';
 import { ResetPasswordRequestDto } from './dto/reset-password-request.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { Oauth2Dto as Oauth2Dto } from './dto/oauth2.dto';
+//import { Oauth2Dto as Oauth2Dto } from './dto/oauth2.dto';
 import { JWTUser } from 'src/lib/jwt';
 
 @Controller('auth')
@@ -30,21 +30,21 @@ export class AuthController {
     return this.authService.register(registerDto);
   }
 
-  @Post('google')
-  google(
-    @Body()
-    registerDto: Oauth2Dto,
-  ) {
-    return this.authService.register(registerDto);
-  }
+  // @Post('google')
+  // google(
+  //   @Body()
+  //   registerDto: Oauth2Dto,
+  // ) {
+  //   return this.authService.register(registerDto);
+  // }
 
-  @Post('microsoft')
-  microsoft(
-    @Body()
-    registerDto: Oauth2Dto,
-  ) {
-    return this.authService.register(registerDto);
-  }
+  // @Post('microsoft')
+  // microsoft(
+  //   @Body()
+  //   registerDto: Oauth2Dto,
+  // ) {
+  //   return this.authService.register(registerDto);
+  // }
 
   @Post('login')
   login(@Body() loginDto: LoginDto) {
@@ -70,7 +70,7 @@ export class AuthController {
   @Get('profile')
   @UseGuards(AccessGuard)
   profile(@Request() req) {
-    return this.authService.getProfile(req?.user?.id)
+    return this.authService.getProfile(req?.user?.id);
   }
 
   @Post('request-password-reset')

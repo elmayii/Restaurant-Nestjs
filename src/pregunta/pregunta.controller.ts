@@ -31,6 +31,7 @@ export class PreguntasController {
   }
 
   @Get(':id')
+  @UseGuards(AccessGuard)
   async getPreguntaById(@Param('id') id: string) {
     const preguntaFound = await this.preguntasService.getPreguntaById(
       Number(id),
@@ -40,6 +41,7 @@ export class PreguntasController {
   }
 
   @Delete(':id')
+  @UseGuards(AccessGuard)
   async deletePregunta(@Param('id') id: string) {
     try {
       return await this.preguntasService.deletePregunta(Number(id));
@@ -49,6 +51,7 @@ export class PreguntasController {
   }
 
   @Put(':id')
+  @UseGuards(AccessGuard)
   async updatePregunta(@Param('id') id: string, @Body() data: pregunta) {
     try {
       return await this.preguntasService.updatePregunta(data, Number(id));

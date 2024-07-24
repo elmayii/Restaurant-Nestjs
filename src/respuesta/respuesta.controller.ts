@@ -19,6 +19,7 @@ export class RespuestasController {
   constructor(private readonly respuestasService: RespuestasService) {}
 
   @Get()
+  @UseGuards(AccessGuard)
   async getAllrespuestas() {
     return this.respuestasService.getAllRespuestas();
   }
@@ -133,6 +134,7 @@ export class RespuestasController {
   }
 
   @Delete()
+  @UseGuards(AccessGuard)
   async deleteRespuesta() {
     return this.respuestasService.deleteRespuesta();
   }

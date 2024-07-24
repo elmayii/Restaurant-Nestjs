@@ -18,6 +18,7 @@ import { AccessGuard } from 'src/auth/auth.guard';
 export class EspiritusController {
   constructor(private readonly espiritusService: EspiritusService) {}
   @Get()
+  @UseGuards(AccessGuard)
   async getAllEspiritus() {
     return this.espiritusService.getAllEspiritus();
   }
@@ -40,6 +41,7 @@ export class EspiritusController {
   }
 
   @Get(':id')
+  @UseGuards(AccessGuard)
   async getEspirituById(@Param('id') id: string) {
     const espirituFound = await this.espiritusService.getEspirituById(
       Number(id),
@@ -49,6 +51,7 @@ export class EspiritusController {
   }
 
   @Delete(':id')
+  @UseGuards(AccessGuard)
   async deleteEspiritu(@Param('id') id: string) {
     try {
       return await this.espiritusService.deleteEspiritu(Number(id));
@@ -58,6 +61,7 @@ export class EspiritusController {
   }
 
   @Put(':id')
+  @UseGuards(AccessGuard)
   async updateEspiritu(@Param('id') id: string, @Body() data: espiritu) {
     try {
       return await this.espiritusService.updateEspiritu(data, Number(id));
