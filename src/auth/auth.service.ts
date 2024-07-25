@@ -32,10 +32,12 @@ export class AuthService {
   async register({ email, password, type }: RegisterDto) {
     let user = await this.userService.findOneByEmail(email);
 
-    if (user && user?.password == password) {
+    const isPasswordValid = await bcryptjs.compare(password, user.password)
+
+    if (user && isPasswordValid) {
       return this.sendUser(user);
     }
-    else if(user && user?.password != password) {
+    else if(user && !isPasswordValid) {
       throw new UnauthorizedException('User Alredy exist')
     }
 
@@ -170,7 +172,7 @@ export class AuthService {
       },
     );
 
-    const resetUrl = `https://www.eons.es/auth/change-password/${token}/${email}`;
+    const resetUrl = `http://localhost:4321/auth/change-password/${token}/${email}`;
 
     const htmlContent = `
       <p>Hola ${user.email},</p>
@@ -197,14 +199,14 @@ export class AuthService {
   async resetPassword({ token, newPassword }: ResetPasswordDto) {
     let email: string;
 
-    try {
-      const payload = await this.jwtService.verifyAsync(token);
-      email = payload.email;
-    } catch (e) {
-      throw new BadRequestException('Invalid or expired token');
-    }
+    // try {
+    //   const payload = await this.jwtService.verifyAsync(token);
+    //   email = payload.email;
+    // } catch (e) {
+    //   throw new BadRequestException('Invalid or expired token');
+    // }
 
-    const user = await this.userService.findOneByEmail(email);
+    var user = await this.userService.findOneByEmail(email);
 
     if (!user) {
       throw new BadRequestException('Email does not exist');
