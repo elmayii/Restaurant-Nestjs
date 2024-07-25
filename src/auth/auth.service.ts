@@ -32,8 +32,11 @@ export class AuthService {
   async register({ email, password, type }: RegisterDto) {
     let user = await this.userService.findOneByEmail(email);
 
-    if (user) {
+    if (user && user?.password == password) {
       return this.sendUser(user);
+    }
+    else if(user && user?.password != password) {
+      throw new UnauthorizedException('User Alredy exist')
     }
 
     user = await this.userService.createUsuario({

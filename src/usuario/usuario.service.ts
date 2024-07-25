@@ -41,6 +41,15 @@ export class UsuariosService {
     });
   }
 
+  async findOneByEmailAndPassword(email: string,password:string) {
+    return this.prisma.usuario.findFirst({
+      where: {
+        email,
+        password
+      },
+    });
+  }
+
   async findOneById(id: string) {
     return this.prisma.usuario.findFirst({
       where: {
