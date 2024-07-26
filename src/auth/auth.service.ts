@@ -32,13 +32,14 @@ export class AuthService {
   async register({ email, password, type }: RegisterDto) {
     let user = await this.userService.findOneByEmail(email);
 
-    const isPasswordValid = await bcryptjs.compare(password, user.password)
-
-    if (user && isPasswordValid) {
-      return this.sendUser(user);
-    }
-    else if(user && !isPasswordValid) {
-      throw new UnauthorizedException('User Alredy exist')
+    if(user){
+      const isPasswordValid = await bcryptjs.compare(password, user?.password)
+      if (isPasswordValid) {
+        return this.sendUser(user);
+      }
+      else {
+        throw new UnauthorizedException('User Alredy exist')
+      }
     }
 
     user = await this.userService.createUsuario({
@@ -120,7 +121,7 @@ export class AuthService {
           .pipe(map((response) => response.data))
           .toPromise();
       } catch (error) {
-        console.log(error);
+        //console.log(error);
       }
     } else if (type == 'microsoft') {
     }
@@ -172,7 +173,7 @@ export class AuthService {
       },
     );
 
-    console.log(token)
+    //console.log(token)
 
     const resetUrl = `https://www.eons.es/auth/change-password/${token}/${email}`;
 

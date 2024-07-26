@@ -23,7 +23,7 @@ export class PreguntasService {
   }
 
   async createPregunta(data: pregunta, request: any): Promise<pregunta> {
-    console.log(request);
+    //console.log(request);
     const user = await this.prisma.usuario.findFirst({
       where: { id: request.id },
     });

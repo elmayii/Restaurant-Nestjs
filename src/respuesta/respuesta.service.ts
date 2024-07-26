@@ -120,14 +120,14 @@ export class RespuestasService {
           ].throw,
         },
       });
-      console.log('action:', action);
+      //console.log('action:', action);
       if (
         answer &&
         !answer?.respuesta?.includes('04') &&
         actions.includes(action)
       ) {
         if (action == '01' && param1) {
-          console.log('elim');
+          //console.log('elim');
           await this.espiritu.deleteEspiritu(Number(param1));
         } else if (action == '02' && param1 && param2) {
           await this.espiritu.updateEspiritu(
@@ -163,11 +163,11 @@ export class RespuestasService {
           ].throw,
         },
       });
-      console.log(
-        userThrows.throws[user.email].throws[
-          userThrows.throws[user.email].currentThrow
-        ].throw,
-      );
+      // console.log(
+      //   userThrows.throws[user.email].throws[
+      //     userThrows.throws[user.email].currentThrow
+      //   ].throw,
+      // );
     }
 
     if (answer) {

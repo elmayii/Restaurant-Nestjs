@@ -34,7 +34,7 @@ export class RespuestasController {
     @Request() req: { user: JWTUser },
     @Query() { type }: { type: string },
   ) {
-    console.log(req.user);
+    //console.log(req.user);
     if (id < '01' || id > '37') {
       const message = 'Lanzamiento no válido';
       // if (lang !== 'es') {

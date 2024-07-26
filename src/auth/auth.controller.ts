@@ -94,7 +94,7 @@ export class AuthController {
 
   @Get('request-verify-email')
   async sendVerificationEmail(@Query('email') email: string) {
-    console.log(email);
+    //console.log(email);
     return this.authService.sendVerificationEmail(email);
   }
 }

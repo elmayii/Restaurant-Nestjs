@@ -11,9 +11,9 @@ export class TranslationController {
     @Query('source') sourceLang: string,
     @Query('target') targetLang: string,
   ): Promise<string> {
-    console.log(text);
-    console.log(sourceLang);
-    console.log(targetLang);
+    // console.log(text);
+    // console.log(sourceLang);
+    // console.log(targetLang);
     return this.translationService.translateText(text, sourceLang, targetLang);
   }
 }
