@@ -4,7 +4,7 @@ import { IsEmail, IsEnum, IsString, MinLength } from 'class-validator';
 enum TYPE {
   'mail',
   'apple',
-  'microsoft',
+  'azure-ad',
   'google',
 }
 export class RegisterDto {
