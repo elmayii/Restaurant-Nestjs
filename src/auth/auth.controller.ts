@@ -80,6 +80,7 @@ export class AuthController {
     return this.authService.requestPasswordReset(resetPasswordRequestDto);
   }
 
+  @UseGuards(AccessGuard)
   @Post('reset-password')
   resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return this.authService.resetPassword(resetPasswordDto);
