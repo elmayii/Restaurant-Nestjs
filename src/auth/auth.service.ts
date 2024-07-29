@@ -273,9 +273,9 @@ export class AuthService {
         this.notificationsService.createNotification({
           nombre: 'Cuenta Verificada',
           id_usuario: user.id,
-          tipo: 'validacion',
+          tipo: 'validAcount',
           descripcion:
-            'Su cuenta ha sido verificada con exito, ahora puede consumir los servicios disponibles',
+            'Su cuenta ha sido verificada con éxito',
           estado: false,
         });
         return { success: true };

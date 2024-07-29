@@ -184,9 +184,9 @@ export class RespuestasService {
         });
 
         this.notificationsService.createNotification({
-          nombre: 'Cuenta Verificada',
+          nombre: 'Esencia Descontada',
           id_usuario: user.id,
-          tipo: 'validacion',
+          tipo: 'essence',
           descripcion: 'Se le ha descontado 1 de esencia por el servicio',
           estado: false,
         });

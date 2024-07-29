@@ -42,8 +42,8 @@ export class AccessGuard implements CanActivate {
           this.notificationsService.createNotification({
             nombre: 'Cuenta sin Verificar',
             id_usuario: user.id,
-            tipo: 'validacion',
-            descripcion: `Aún no ha validado su cuenta`,
+            tipo: 'notValidAcount',
+            descripcion: `Aún no ha validado su cuenta, comienze el proceso aquí`,
             estado: false,
           });
           throw new ForbiddenException('Email not verified');
