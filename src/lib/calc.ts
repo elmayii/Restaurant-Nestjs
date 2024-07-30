@@ -61,11 +61,38 @@ function procedure(
   let incrised = value - costInf;
   incrised = incrised / laps;
 
-  const descuento = incrised + descInf;
-  const costo = value - (descuento / 100) * value;
+  let descuento = Number(incrised + descInf);
+  let costo = Number(value - (descuento / 100) * value);
+
+  const op = transformDecimalTo99(Number(descuento.toFixed(2)),Number(costo.toFixed(2)))
   return {
-    descuento: Number(descuento.toFixed(2)),
-    costo: Number(costo.toFixed(2)),
+    descuento: op.descuento,
+    costo: op.costo,
     esencia: value,
   };
+}
+
+interface numbersTranformed{
+  descuento:number;
+  costo:number
+}
+
+function transformDecimalTo99(descuento:number,costo:number): numbersTranformed {
+  // Convertir el valor a una cadena para manipular los decimales
+  const valueAsString = costo.toString();
+
+  // Separar la parte entera de la decimal
+  const [integerPart, decimalPart] = valueAsString.split('.');
+
+  // Verificar si todos los decimales son ceros
+  const allDecimalsAreZero = decimalPart === '00' || !decimalPart;
+
+  // Si todos los decimales son ceros, reemplazarlos por .99
+  if (allDecimalsAreZero) {
+    costo = parseFloat(`${integerPart}.99`) - 1;
+    descuento = descuento + 0.01
+  }
+
+  // Si no, retornar el valor original
+  return {costo,descuento};
 }
