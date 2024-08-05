@@ -36,6 +36,8 @@ export class NotificationsService {
         descripcion: data.descripcion,
         estado: data.estado,
         date: new Date(),
+        nombre: data.nombre,
+        tipo: data.tipo
       },
     });
   }
