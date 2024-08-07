@@ -63,11 +63,11 @@ export class TropiPayController {
     };
     return await this.tpp.paymentCards.create({
       reference: ref,
-      concept: 'Esencias',
+      concept: 'de Esencia',
       favorite: true,
       description: payload.descripcion,
       amount: payload.precio,
-      currency: 'USD',
+      currency: 'EUR',
       singleUse: true,
       reasonId: 4,
       expirationDays: 1,
@@ -101,16 +101,16 @@ export class TropiPayController {
     });
     const ref = (await this.usuarioService.getUsuarioById(req.user.id)).email;
     const payload = {
-      descripcion: `${datah.esencia} Esencia`,
+      descripcion: `${datah.esencia} de Esencia`,
       precio: datah.precio * 100,
     };
     return await this.tpp.paymentCards.create({
       reference: ref,
-      concept: 'Esencias',
+      concept: 'Esencia',
       favorite: true,
       description: payload.descripcion,
       amount: payload.precio,
-      currency: 'USD',
+      currency: 'EUR',
       singleUse: true,
       reasonId: 4,
       expirationDays: 1,

@@ -46,6 +46,7 @@ export class AuthService {
       email,
       password: await bcryptjs.hash(password, 10),
       type,
+      esencia:0
     });
 
     return this.sendUser(user);
@@ -63,6 +64,7 @@ export class AuthService {
       password: await bcryptjs.hash(password, 10),
       type: 'google',
       isEmailVerified: true,
+      esencia:0
     });
 
     return this.sendUser(user);
@@ -80,6 +82,7 @@ export class AuthService {
       password: await bcryptjs.hash(password, 10),
       type: 'microsoft',
       isEmailVerified: true,
+      esencia:0
     });
 
     return this.sendUser(user);
