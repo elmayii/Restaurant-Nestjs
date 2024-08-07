@@ -35,9 +35,9 @@ export class NotificationsService {
         id_usuario: data.id_usuario,
         descripcion: data.descripcion,
         estado: data.estado,
-        date: new Date(),
         nombre: data.nombre,
-        tipo: data.tipo
+        tipo: data.tipo,
+        date: new Date()
       },
     });
   }

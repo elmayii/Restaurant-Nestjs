@@ -53,7 +53,7 @@ export class TransferenciaService {
       nombre: 'Transferencia',
       id_usuario: receiverUser.id,
       tipo: 'transferencia',
-      descripcion: `Usted ha recibido ${amount} esencias de ${sender.email}`,
+      descripcion: `Usted ha recibido ${amount} de Esencia de ${sender.email}`,
       estado: false,
     });
 
@@ -61,7 +61,7 @@ export class TransferenciaService {
       nombre: 'Transferencia',
       id_usuario: sender.id,
       tipo: 'transferencia',
-      descripcion: `Usted ha enviado ${amount} esencias a ${receiverUser.email}`,
+      descripcion: `Usted ha enviado ${amount} de Esencia a ${receiverUser.email}`,
       estado: false,
     });
 
