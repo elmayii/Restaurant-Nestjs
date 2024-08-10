@@ -8,12 +8,9 @@ import { Module } from '@nestjs/common';
         host: 'smtp.gmail.com',
         port: 587,
         auth: {
-          user: 'garciaj1246@gmail.com',
-          pass: 'rncd qcaw jkix ftir',
+          user: 'eonss7070@gmail.com',
+          pass: 'qdgf jwld yoqc kzdk',
         },
-      },
-      defaults: {
-        from: '"No Reply" garciaj1246@gmail.com',
       },
     }),
   ],
