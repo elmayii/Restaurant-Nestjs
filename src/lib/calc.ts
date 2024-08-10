@@ -39,7 +39,7 @@ export function calculatePrice(esencia: number): PriceDTO {
   }
   // 100000 -- 34%
   else if (esencia > 10000 && esencia <= 100000) {
-    return procedure(esencia, 10000, 100000, 32, 26);
+    return procedure(esencia, 10000, 100000, 32, 36);
   }
   // 1000000 -- 40%
   else if (esencia > 100000 && esencia <= 1000000) {
