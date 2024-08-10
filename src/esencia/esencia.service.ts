@@ -9,7 +9,7 @@ export class EsenciasService {
   constructor(private prisma: PrismaService) {}
 
   async getAllEsencias(): Promise<esencia[]> {
-    return this.prisma.esencia.findMany();
+    return this.prisma.esencia.findMany({orderBy:{id:'desc'}});
   }
 
   async getEsenciaById(id: number): Promise<esencia> {
