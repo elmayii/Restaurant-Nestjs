@@ -5,6 +5,7 @@ import {
   Body,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
 import { TropiPayService } from './tropipay.service';
 import { EsenciasService } from 'src/esencia/esencia.service';
@@ -16,6 +17,7 @@ import { AccessGuard } from 'src/auth/auth.guard';
 import { Tropipay } from '@yosle/tropipayjs';
 import { ServerMode$1 } from './type/type';
 import { PaymentOperation } from './dto/paymentCheck';
+import { TranslationService } from 'src/translation/translation.service';
 
 @Controller('tropipay')
 export class TropiPayController {
@@ -24,6 +26,7 @@ export class TropiPayController {
     private readonly esenciaService: EsenciasService,
     private readonly usuarioService: UsuariosService,
     private readonly prisma: PrismaService,
+    private readonly translationService: TranslationService,
   ) {}
   config = {
     clientId: process.env.TROPIPAY_CLIENT_ID,
@@ -45,6 +48,7 @@ export class TropiPayController {
   async createPaymentCard(
     @Param('id') id: string,
     @Request() req: { user: JWTUser },
+    @Query() { lang }: { lang: string },
   ) {
     const date = new Date();
     const formattedDateTime = date.toLocaleString('es-ES', {
@@ -58,7 +62,11 @@ export class TropiPayController {
     const ref = (await this.usuarioService.getUsuarioById(req.user.id)).email;
     const esencia = await this.esenciaService.getEsenciaById(Number(id));
     const payload = {
-      descripcion: esencia.descripcion,
+      descripcion: await this.translationService.translateText(
+        esencia.descripcion,
+        'es',
+        lang,
+      ),
       precio: Number(esencia.precio) * 100,
     };
     return await this.tpp.paymentCards.create({
@@ -89,6 +97,7 @@ export class TropiPayController {
   async createPaymentCustomCard(
     @Body() datah: PaymentOperation,
     @Request() req: { user: JWTUser },
+    @Query() { lang }: { lang: string },
   ) {
     const date = new Date();
     const formattedDateTime = date.toLocaleString('es-ES', {
@@ -101,7 +110,11 @@ export class TropiPayController {
     });
     const ref = (await this.usuarioService.getUsuarioById(req.user.id)).email;
     const payload = {
-      descripcion: `${datah.esencia} de Esencia`,
+      descripcion: await this.translationService.translateText(
+        `${datah.esencia} de Esencia`,
+        'es',
+        lang,
+      ),
       precio: datah.precio * 100,
     };
     return await this.tpp.paymentCards.create({
@@ -118,8 +131,8 @@ export class TropiPayController {
       urlSuccess: 'https://www.eons.es/payment',
       urlFailed: 'https://www.eons.es/payment/failed',
       urlNotification:
-        //'https://webhook.site/a8b11a1a-e3b9-4811-9f0f-a0452647a269'
-        'https://eons-services.onrender.com/tropipay/',
+        'https://webhook.site/c43d202f-2571-4a6c-af46-e2a3ca539851',
+      //'https://eons-services.onrender.com/tropipay/',
       serviceDate: formattedDateTime,
       client: null,
       directPayment: true,
@@ -130,12 +143,14 @@ export class TropiPayController {
   @Post()
   async validateSignature(@Body() data) {
     const { bankOrderCode, originalCurrencyAmount, signaturev2 } = data.data;
+    console.log(signaturev2);
     const clientId = process.env.TROPIPAY_CLIENT_ID;
     const clientSecret = process.env.TROPIPAY_CLIENT_SECRET;
 
     const messageToSign = `${bankOrderCode}${clientId}${clientSecret}${originalCurrencyAmount}`;
 
     const expectedSignature = sha256(messageToSign);
+    console.log(expectedSignature);
 
     if (expectedSignature === signaturev2) {
       let epay = 0;
