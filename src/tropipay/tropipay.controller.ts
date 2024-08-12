@@ -37,7 +37,7 @@ export class TropiPayController {
       'ALLOW_GET_BALANCE',
       'ALLOW_GET_MOVEMENT_LIST',
     ],
-    serverMode: 'Development' as ServerMode$1,
+    serverMode: 'Develop' as ServerMode$1,
   };
   tpp = new Tropipay(this.config);
 
@@ -84,6 +84,7 @@ export class TropiPayController {
         paymentMethods: ['EXT', 'TPP'],
       });
     } catch (error) {
+      console.log(error)
       if (error?.error?.message == 'Card credit cashin limit exceded')
         throw new BadRequestException('limit exceded');
     }
