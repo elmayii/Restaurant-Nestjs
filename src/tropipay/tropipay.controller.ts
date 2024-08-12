@@ -81,7 +81,7 @@ export class TropiPayController {
         singleUse: true,
         reasonId: 4,
         expirationDays: 1,
-        lang: 'es',
+        lang: lang,
         urlSuccess: 'https://www.eons.es/payment',
         urlFailed: 'https://www.eons.es/payment/failed',
         urlNotification:
@@ -133,7 +133,7 @@ export class TropiPayController {
         singleUse: true,
         reasonId: 4,
         expirationDays: 1,
-        lang: 'es',
+        lang: lang,
         urlSuccess: 'https://www.eons.es/payment',
         urlFailed: 'https://www.eons.es/payment/failed',
         urlNotification:
