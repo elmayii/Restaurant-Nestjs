@@ -5,6 +5,7 @@ import {
   Body,
   UseGuards,
   Request,
+  BadRequestException,
 } from '@nestjs/common';
 import { TropiPayService } from './tropipay.service';
 import { EsenciasService } from 'src/esencia/esencia.service';
@@ -46,6 +47,9 @@ export class TropiPayController {
     @Param('id') id: string,
     @Request() req: { user: JWTUser },
   ) {
+    try {
+      
+    
     const date = new Date();
     const formattedDateTime = date.toLocaleString('es-ES', {
       day: '2-digit',
@@ -82,6 +86,11 @@ export class TropiPayController {
       directPayment: true,
       paymentMethods: ['EXT', 'TPP'],
     });
+    } 
+    catch (error) {
+      if(error?.error?.message == "Card credit cashin limit exceded")
+        throw new BadRequestException("limit exceded")
+    }
   }
 
   @Post('create-payment-card')
@@ -90,6 +99,7 @@ export class TropiPayController {
     @Body() datah: PaymentOperation,
     @Request() req: { user: JWTUser },
   ) {
+    try {
     const date = new Date();
     const formattedDateTime = date.toLocaleString('es-ES', {
       day: '2-digit',
@@ -125,6 +135,11 @@ export class TropiPayController {
       directPayment: true,
       paymentMethods: ['EXT', 'TPP'],
     });
+    }
+    catch (error) {
+      if(error?.error?.message == "Card credit cashin limit exceded")
+        throw new BadRequestException("limit exceded")
+    }
   }
 
   @Post()
