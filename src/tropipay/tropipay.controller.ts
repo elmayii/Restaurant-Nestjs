@@ -5,7 +5,6 @@ import {
   Body,
   UseGuards,
   Request,
-  Query,
   BadRequestException,
 } from '@nestjs/common';
 import { TropiPayService } from './tropipay.service';
@@ -18,7 +17,6 @@ import { AccessGuard } from 'src/auth/auth.guard';
 import { Tropipay } from '@yosle/tropipayjs';
 import { ServerMode$1 } from './type/type';
 import { PaymentOperation } from './dto/paymentCheck';
-import { TranslationService } from 'src/translation/translation.service';
 
 @Controller('tropipay')
 export class TropiPayController {
@@ -27,7 +25,6 @@ export class TropiPayController {
     private readonly esenciaService: EsenciasService,
     private readonly usuarioService: UsuariosService,
     private readonly prisma: PrismaService,
-    private readonly translationService: TranslationService,
   ) {}
   config = {
     clientId: process.env.TROPIPAY_CLIENT_ID,
@@ -40,7 +37,7 @@ export class TropiPayController {
       'ALLOW_GET_BALANCE',
       'ALLOW_GET_MOVEMENT_LIST',
     ],
-    serverMode: 'Production' as ServerMode$1,
+    serverMode: 'Development' as ServerMode$1,
   };
   tpp = new Tropipay(this.config);
 
@@ -49,55 +46,46 @@ export class TropiPayController {
   async createPaymentCard(
     @Param('id') id: string,
     @Request() req: { user: JWTUser },
-    @Query() { lang }: { lang: string },
   ) {
     try {
-      
-    
-    const date = new Date();
-    const formattedDateTime = date.toLocaleString('es-ES', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
-    });
-    const ref = (await this.usuarioService.getUsuarioById(req.user.id)).email;
-    const esencia = await this.esenciaService.getEsenciaById(Number(id));
-    const payload = {
-      descripcion: await this.translationService.translateText(
-        esencia.descripcion,
-        'es',
-        lang,
-      ),
-      precio: Number(esencia.precio) * 100,
-    };
-    return await this.tpp.paymentCards.create({
-      reference: ref,
-      concept: 'de Esencia',
-      favorite: true,
-      description: payload.descripcion,
-      amount: payload.precio,
-      currency: 'EUR',
-      singleUse: true,
-      reasonId: 4,
-      expirationDays: 1,
-      lang: 'es',
-      urlSuccess: 'https://www.eons.es/payment',
-      urlFailed: 'https://www.eons.es/payment/failed',
-      urlNotification:
-        //'https://webhook.site/a8b11a1a-e3b9-4811-9f0f-a0452647a269'
-        'https://eons-services.onrender.com/tropipay',
-      serviceDate: formattedDateTime,
-      client: null,
-      directPayment: true,
-      paymentMethods: ['EXT', 'TPP'],
-    });
-    } 
-    catch (error) {
-      if(error?.error?.message == "Card credit cashin limit exceded")
-        throw new BadRequestException("limit exceded")
+      const date = new Date();
+      const formattedDateTime = date.toLocaleString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      });
+      const ref = (await this.usuarioService.getUsuarioById(req.user.id)).email;
+      const esencia = await this.esenciaService.getEsenciaById(Number(id));
+      const payload = {
+        descripcion: esencia.descripcion,
+        precio: Number(esencia.precio) * 100,
+      };
+      return await this.tpp.paymentCards.create({
+        reference: ref,
+        concept: 'de Esencia',
+        favorite: true,
+        description: payload.descripcion,
+        amount: payload.precio,
+        currency: 'EUR',
+        singleUse: true,
+        reasonId: 4,
+        expirationDays: 1,
+        lang: 'es',
+        urlSuccess: 'https://www.eons.es/payment',
+        urlFailed: 'https://www.eons.es/payment/failed',
+        urlNotification:
+          'https://webhook.site/c43d202f-2571-4a6c-af46-e2a3ca539851',
+        serviceDate: formattedDateTime,
+        client: null,
+        directPayment: true,
+        paymentMethods: ['EXT', 'TPP'],
+      });
+    } catch (error) {
+      if (error?.error?.message == 'Card credit cashin limit exceded')
+        throw new BadRequestException('limit exceded');
     }
   }
 
@@ -106,52 +94,47 @@ export class TropiPayController {
   async createPaymentCustomCard(
     @Body() datah: PaymentOperation,
     @Request() req: { user: JWTUser },
-    @Query() { lang }: { lang: string },
   ) {
     try {
-    const date = new Date();
-    const formattedDateTime = date.toLocaleString('es-ES', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
-    });
-    const ref = (await this.usuarioService.getUsuarioById(req.user.id)).email;
-    const payload = {
-      descripcion: await this.translationService.translateText(
-        `${datah.esencia} de Esencia`,
-        'es',
-        lang,
-      ),
-      precio: datah.precio * 100,
-    };
-    return await this.tpp.paymentCards.create({
-      reference: ref,
-      concept: 'Esencia',
-      favorite: true,
-      description: payload.descripcion,
-      amount: payload.precio,
-      currency: 'EUR',
-      singleUse: true,
-      reasonId: 4,
-      expirationDays: 1,
-      lang: 'es',
-      urlSuccess: 'https://www.eons.es/payment',
-      urlFailed: 'https://www.eons.es/payment/failed',
-      urlNotification:
-        'https://webhook.site/c43d202f-2571-4a6c-af46-e2a3ca539851',
-      //'https://eons-services.onrender.com/tropipay/',
-      serviceDate: formattedDateTime,
-      client: null,
-      directPayment: true,
-      paymentMethods: ['EXT', 'TPP'],
-    });
-    }
-    catch (error) {
-      if(error?.error?.message == "Card credit cashin limit exceded")
-        throw new BadRequestException("limit exceded")
+      const date = new Date();
+      const formattedDateTime = date.toLocaleString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      });
+      const ref = (await this.usuarioService.getUsuarioById(req.user.id)).email;
+      const payload = {
+        descripcion: `${datah.esencia} de Esencia`,
+
+        precio: datah.precio * 100,
+      };
+      return await this.tpp.paymentCards.create({
+        reference: ref,
+        concept: 'Esencia',
+        favorite: true,
+        description: payload.descripcion,
+        amount: payload.precio,
+        currency: 'EUR',
+        singleUse: true,
+        reasonId: 4,
+        expirationDays: 1,
+        lang: 'es',
+        urlSuccess: 'https://www.eons.es/payment',
+        urlFailed: 'https://www.eons.es/payment/failed',
+        urlNotification:
+          'https://webhook.site/c43d202f-2571-4a6c-af46-e2a3ca539851',
+        //'https://eons-services.onrender.com/tropipay/',
+        serviceDate: formattedDateTime,
+        client: null,
+        directPayment: true,
+        paymentMethods: ['EXT', 'TPP'],
+      });
+    } catch (error) {
+      if (error?.error?.message == 'Card credit cashin limit exceded')
+        throw new BadRequestException('limit exceded');
     }
   }
 
