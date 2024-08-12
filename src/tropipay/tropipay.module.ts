@@ -9,6 +9,7 @@ import { WebsocketGateway } from 'src/websockets/websocket.gateway';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { NotificationsService } from 'src/notifications/notifications.service';
+import { TranslationService } from 'src/translation/translation.service';
 
 @Module({
   providers: [
@@ -19,6 +20,7 @@ import { NotificationsService } from 'src/notifications/notifications.service';
     PrismaService,
     JwtService,
     NotificationsService,
+    TranslationService,
   ],
   controllers: [TropiPayController],
   imports: [HttpModule, PrismaModule],
