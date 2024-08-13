@@ -9,7 +9,7 @@ export class TropiPayService {
   async validateBankOrder(data: PaymentCheck) {
     try {
       const compra = await this.prisma.compra.findFirst({
-        where: { email: data.reference, bank_order: data.banckOrderCode },
+        where: { bank_order: data.banckOrderCode },
       });
       if (compra) {
         return { message: 'Compra exitosa' };
