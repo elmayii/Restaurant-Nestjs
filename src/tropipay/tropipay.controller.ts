@@ -6,6 +6,7 @@ import {
   UseGuards,
   Request,
   BadRequestException,
+  Query,
 } from '@nestjs/common';
 import { TropiPayService } from './tropipay.service';
 import { EsenciasService } from 'src/esencia/esencia.service';
@@ -37,7 +38,7 @@ export class TropiPayController {
       'ALLOW_GET_BALANCE',
       'ALLOW_GET_MOVEMENT_LIST',
     ],
-    serverMode: 'Develop' as ServerMode$1,
+    serverMode: 'Production' as ServerMode$1,
   };
   tpp = new Tropipay(this.config);
 
@@ -46,6 +47,7 @@ export class TropiPayController {
   async createPaymentCard(
     @Param('id') id: string,
     @Request() req: { user: JWTUser },
+    @Query() { lang }: { lang: string },
   ) {
     try {
       const date = new Date();
@@ -73,11 +75,11 @@ export class TropiPayController {
         singleUse: true,
         reasonId: 4,
         expirationDays: 1,
-        lang: 'es',
+        lang: lang || 'en',
         urlSuccess: 'https://www.eons.es/payment',
         urlFailed: 'https://www.eons.es/payment/failed',
         urlNotification:
-          'https://webhook.site/c43d202f-2571-4a6c-af46-e2a3ca539851',
+          'https://eons-services.onrender.com/tropipay/',
         serviceDate: formattedDateTime,
         client: null,
         directPayment: true,
@@ -141,31 +143,37 @@ export class TropiPayController {
 
   @Post()
   async validateSignature(@Body() data) {
+    //console.log(data.data.bankOrderCode);
     const { bankOrderCode, originalCurrencyAmount, signaturev2 } = data.data;
-    console.log(signaturev2);
+    //console.log(signaturev2);
     const clientId = process.env.TROPIPAY_CLIENT_ID;
     const clientSecret = process.env.TROPIPAY_CLIENT_SECRET;
 
     const messageToSign = `${bankOrderCode}${clientId}${clientSecret}${originalCurrencyAmount}`;
 
     const expectedSignature = sha256(messageToSign);
-    console.log(expectedSignature);
+    //console.log(expectedSignature);
 
     if (expectedSignature === signaturev2) {
       let epay = 0;
-      if (data.data.charges[0].amount === 499) {
+      if (data.data.paymentcard.amount === 499) {
         epay = 5;
-      } else if (data.data.charges[0].amount === 1440) {
+      } else if (data.data.paymentcard.amount === 1440) {
         epay = 15;
-      } else if (data.data.charges[0].amount === 2350) {
+      } else if (data.data.paymentcard.amount === 2350) {
         epay = 25;
-      } else if (data.data.charges[0].amount === 4599) {
+      } else if (data.data.paymentcard.amount === 4599) {
         epay = 50;
-      } else if (data.data.charges[0].amount === 8999) {
+      } else if (data.data.paymentcard.amount === 8999) {
         epay = 100;
-      } else if (data.data.charges[0].amount === 21250) {
+      } else if (data.data.paymentcard.amount === 21250) {
         epay = 250;
-      } else {
+      }else if (data.data.paymentcard.amount === 71999) {
+        epay = 1000;
+      }else if (data.data.paymentcard.amount === 174999) {
+        epay = 2500;
+      }
+      else {
         const match = data.data.paymentcard.description.match(/\d+/);
         epay = match ? parseInt(match[0], 10) : null;
       }
