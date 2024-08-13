@@ -161,7 +161,7 @@ export class AuthService {
     };
   }
 
-  async requestPasswordReset({ email }: ResetPasswordRequestDto) {
+  async requestPasswordReset({ email, lang }: ResetPasswordRequestDto) {
     const user = await this.userService.findOneByEmail(email);
 
     if (!user) {
@@ -180,12 +180,35 @@ export class AuthService {
 
     const resetUrl = `https://www.eons.es/auth/change-password/${token}/${email}`;
 
-    const htmlContent = `
+    if(lang == 'es'){
+      const htmlContent = `
       <p>Hola ${user.email},</p>
       <p>Recibimos una solicitud para restablecer tu contraseña. Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
       <p><a href="${resetUrl}">Restablecer Contraseña</a></p>
       <p>Si no solicitaste este cambio, puedes ignorar este correo electrónico.</p>
       <p>Saludos,</p>
+      <p>EONS</p>
+    `;
+
+    await this.mailerService.sendMail({
+      to: email,
+      subject: 'Solicitud de restablecimiento de contraseña',
+      html: htmlContent,
+      context: {
+        name: user.email,
+        resetUrl,
+      },
+    });
+
+    return { message: 'Password reset email sent', token: token };
+    }
+    else{
+      const htmlContent = `
+      <p>Hello ${user.email},</p>
+      <p>We have received a request to reset your password. Please click the link below to reset your password:</p>
+      <p><a href="${resetUrl}">Reset Password</a></p>
+      <p>If you did not request this change, you can ignore this email.</p>
+      <p>Regards,</p>
       <p>EONS</p>
     `;
 
@@ -200,6 +223,7 @@ export class AuthService {
     });
 
     return { message: 'Password reset email sent', token: token };
+    }
   }
 
   async resetPassword({ newPassword }: ResetPasswordDto) {
@@ -227,7 +251,7 @@ export class AuthService {
     return { message: 'Password successfully reset' };
   }
 
-  async sendVerificationEmail(email: string) {
+  async sendVerificationEmail(email: string,lang: string) {
     const user = await this.userService.findOneByEmail(email);
 
     if (!user) {
@@ -242,25 +266,51 @@ export class AuthService {
       expiresIn: '1h',
       secret: jwtConstants.accessSecret,
     });
+
     const resetUrl = `https://eons-services.onrender.com/auth/verify-email/?token=${token}`;
-    const htmlContent = `
-      <p>Hola ${email},</p>
-      <p>Por favor verifica tu correo electrónico haciendo clic en el siguiente enlace:</p>
-      <p><a href="${resetUrl}">Verificar Email</a></p>
-      <p>Si no solicitaste este cambio, puedes ignorar este correo electrónico.</p>
-      <p>Saludos,</p>
+
+    if(lang == 'es'){
+      const htmlContent = `
+        <p>Hola ${email},</p>
+        <p>Por favor verifica tu correo electrónico haciendo clic en el siguiente enlace:</p>
+        <p><a href="${resetUrl}">Verificar Email</a></p>
+        <p>Si no solicitaste este cambio, puedes ignorar este correo electrónico.</p>
+        <p>Saludos,</p>
+        <p>EONS</p>
+      `;
+  
+      await this.mailerService.sendMail({
+        to: email,
+        subject: 'Verifica tu correo electrónico',
+        html: htmlContent,
+        context: {
+          resetUrl,
+        },
+      });
+      return token;
+    }
+    else{
+      const htmlContent = `
+      <p>Hello ${email},</p>
+      <p>Please verify your email by clicking the link below:</p>
+      <p><a href="${resetUrl}">Verify Email</a></p>
+      <p>If you did not request this change, you can ignore this email.</p>
+      <p>Regards,</p>
       <p>EONS</p>
     `;
 
     await this.mailerService.sendMail({
       to: email,
-      subject: 'Verifica tu correo electrónico',
+      subject: 'Verify your email',
       html: htmlContent,
       context: {
         resetUrl,
       },
     });
     return token;
+    }
+
+    
   }
 
   async verifyEmail(token: string) {

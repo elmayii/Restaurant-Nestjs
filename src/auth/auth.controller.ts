@@ -93,8 +93,11 @@ export class AuthController {
   }
 
   @Get('request-verify-email')
-  async sendVerificationEmail(@Query('email') email: string) {
+  async sendVerificationEmail(
+    @Query('email') email: string,
+    @Query('lang') lang: string
+    ) {
     //console.log(email);
-    return this.authService.sendVerificationEmail(email);
+    return this.authService.sendVerificationEmail(email,lang);
   }
 }
