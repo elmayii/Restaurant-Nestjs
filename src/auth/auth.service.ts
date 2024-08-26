@@ -178,7 +178,7 @@ export class AuthService {
 
     //console.log(token)
 
-    const resetUrl = `https://eons-services.onrender.com/auth/change-password/${token}/${email}`;
+    const resetUrl = `https://eons.es/auth/change-password/${token}/${email}`;
 
     if(lang == 'es'){
       const htmlContent = `
