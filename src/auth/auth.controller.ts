@@ -82,8 +82,11 @@ export class AuthController {
 
   @UseGuards(AccessGuard)
   @Post('reset-password')
-  resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
-    return this.authService.resetPassword(resetPasswordDto);
+  resetPassword(
+    @Request() req,
+    @Body() resetPasswordDto: ResetPasswordDto
+    ) {
+    return this.authService.resetPassword(resetPasswordDto,req?.user?.email);
   }
 
   @Get('verify-email')

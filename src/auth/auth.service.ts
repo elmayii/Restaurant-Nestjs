@@ -178,7 +178,7 @@ export class AuthService {
 
     //console.log(token)
 
-    const resetUrl = `https://www.eons.es/auth/change-password/${token}/${email}`;
+    const resetUrl = `http://localhost:4321/auth/change-password/${token}/${email}`;
 
     if(lang == 'es'){
       const htmlContent = `
@@ -226,28 +226,14 @@ export class AuthService {
     }
   }
 
-  async resetPassword({ newPassword }: ResetPasswordDto) {
-    let email: string;
-
-    // try {
-    //    const payload = await this.jwtService.verifyAsync(token);
-    //    email = payload.email;
-    //  } catch (e) {
-    //    throw new BadRequestException('Invalid or expired token');
-    // }
-
+  async resetPassword({ newPassword }: ResetPasswordDto, email: string) {
     var user = await this.userService.findOneByEmail(email);
 
     if (!user) {
       throw new BadRequestException('Email does not exist');
     }
-
     user.password = await bcryptjs.hash(newPassword, 10);
-    await this.userService.updateUsuario(
-      { password: user.password, email: user.email, type: user.type },
-      user.id,
-    );
-
+    await this.userService.updateUsuario(user,user.id);
     return { message: 'Password successfully reset' };
   }
 
