@@ -65,7 +65,7 @@ export class TransferenciaService {
       estado: false,
     });
 
-    return { message: 'Transfer successful' };
+    return { essence: (sender.esencia - amount) };
   }
 
   async getRecentTransfers(userId: string) {
