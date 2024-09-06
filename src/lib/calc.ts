@@ -31,11 +31,11 @@ export function calculatePrice(esencia: number): PriceDTO {
   }
   // 1000 -- 28%
   else if (esencia > 250 && esencia <= 1000) {
-    return procedure(esencia, 250, 1000, 15, 28);
+    return procedure(esencia, 250, 1000, 15, 26);
   }
   // 10000 -- 32%
   else if (esencia > 1000 && esencia <= 10000) {
-    return procedure(esencia, 1000, 10000, 28, 32);
+    return procedure(esencia, 1000, 10000, 26, 32);
   }
   // 100000 -- 34%
   else if (esencia > 10000 && esencia <= 100000) {

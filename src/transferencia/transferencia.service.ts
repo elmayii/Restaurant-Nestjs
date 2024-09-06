@@ -68,10 +68,10 @@ export class TransferenciaService {
     return { essence: (sender.esencia - amount) };
   }
 
-  async getRecentTransfers(userId: string) {
+  async getRecentTransfers(userId: string,userEmail:string) {
     const transfers = await this.prisma.transferencia.findMany({
       where: {
-        OR: [{ user_id: userId }, { receiver: userId }],
+        OR: [{ user_id: userId }, { receiver: userEmail }],
       },
       orderBy: {
         date: 'desc',

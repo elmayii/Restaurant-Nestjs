@@ -32,7 +32,8 @@ export class TransferenciaController {
   @Get()
   async getRecentTransfers(@Request() req: { user: JWTUser }) {
     const userId = req.user.id;
-    return this.transferenciaService.getRecentTransfers(userId);
+    const userEmail = req.user?.email || ''
+    return this.transferenciaService.getRecentTransfers(userId,userEmail);
   }
 
   @UseGuards(AccessGuard)
