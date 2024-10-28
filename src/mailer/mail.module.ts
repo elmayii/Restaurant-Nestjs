@@ -8,8 +8,8 @@ import { Module } from '@nestjs/common';
         host: 'smtp.gmail.com',
         port: 587,
         auth: {
-          user: 'eonss7070@gmail.com',
-          pass: 'qdgf jwld yoqc kzdk',
+          user: 'verify.eons.es@gmail.com',
+          pass: 'Verify24_eonsemail',
         },
       },
     }),

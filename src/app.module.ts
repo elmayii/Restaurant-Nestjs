@@ -17,6 +17,9 @@ import { TransferenciaModule } from './transferencia/transferencia.module';
 import { WebsocketModule } from './websockets/websocket.module';
 import { EsenciaModule } from './esencia/esencia.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { ClientModule } from './client/client.module';
+import { RestaurantModule } from './restaurant/restaurant.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -37,6 +40,9 @@ import { NotificationsModule } from './notifications/notifications.module';
     TransferenciaModule,
     WebsocketModule,
     NotificationsModule,
+    ClientModule,
+    RestaurantModule,
+    OrderModule,
   ],
   providers: [UserCleanupService],
   controllers: [],

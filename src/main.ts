@@ -15,9 +15,7 @@ async function bootstrap() {
   );
   app.enableCors({
     origin: [
-      'http://localhost:4321',
-      'https://eons-main.vercel.app',
-      'https://www.eons.es',
+      'http://localhost:4000',
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
