@@ -8,128 +8,29 @@ datasource db {
   directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
-model espiritu {
-  id                  Int      @id @default(autoincrement())
-  nombre              String?  @db.VarChar
-  descripcion         String?  @db.VarChar
-  foto                String?  @db.VarChar
-  id_usuario          String?
-  descripcion_sistema String?  @db.VarChar
-  usuario             usuario? @relation(fields: [id_usuario], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "id_usuario")
+model client {
+  id                         Int     @id @default(autoincrement())
+  name                       String? @db.VarChar
+  email                      String? @db.VarChar
+  phone                      String? @db.VarChar
+  age                        Int?
+  order_order_clientToclient order[] @relation("order_clientToclient")
 }
 
-model pregunta {
-  id          Int       @id @default(autoincrement())
-  descripcion String?   @db.VarChar
-  respuesta   String?   @db.VarChar
-  id_usuario  String?   @db.VarChar
-  fecha       DateTime? @db.Date
-  tipo        String?   @db.VarChar
-  favorito    Boolean?  @default(false)
-  usuario     usuario?  @relation(fields: [id_usuario], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "id_usuario")
+model order {
+  id                                      Int         @id @default(autoincrement())
+  description                             String?     @db.VarChar
+  client                                  Int?
+  restaurant                              Int?
+  client_order_clientToclient             client?     @relation("order_clientToclient", fields: [client], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "clients_fkey")
+  restaurant_order_restaurantTorestaurant restaurant? @relation("order_restaurantTorestaurant", fields: [restaurant], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "restaurant_fkey")
 }
 
-model respuesta {
-  respuesta String? @db.VarChar
-  id        String  @id @db.VarChar
+model restaurant {
+  id                                 Int     @id @default(autoincrement())
+  name                               String? @db.VarChar
+  capacity                           Int?
+  address                            String? @db.VarChar
+  clients                            String? @db.VarChar
+  order_order_restaurantTorestaurant order[] @relation("order_restaurantTorestaurant")
 }
-
-model usuario {
-  email              String              @unique(map: "email") @db.VarChar
-  password           String?             @db.VarChar
-  id                 String              @id @default(uuid())
-  isEmailVerified    Boolean             @default(false)
-  type               String              @db.VarChar
-  esencia            Float?
-  createdAt          DateTime            @default(now())
-  espiritu           espiritu[]
-  evaluacion_general evaluacion_general?
-  notificaciones     notificaciones[]
-  pregunta           pregunta[]
-  transferencia      transferencia[]
-}
-
-model moneda {
-  id          Int     @id
-  descripcion String? @db.VarChar
-}
-
-model respuesta_dia {
-  id        String  @id @db.VarChar
-  respuesta String? @db.VarChar
-}
-
-model respuesta_especial {
-  id        String  @id @db.VarChar
-  respuesta String? @db.VarChar
-}
-
-model esencia {
-  id          Int     @id @default(autoincrement())
-  precio      String? @db.VarChar
-  descripcion String? @db.VarChar
-  descuento   Int?    @default(0)
-}
-
-model respuesta_predialogo {
-  respuesta String? @db.VarChar
-  id        String  @id @db.VarChar
-}
-
-model respuesta_general1 {
-  id        String  @id @db.VarChar
-  respuesta String? @db.VarChar
-}
-
-model respuesta_general2 {
-  id        String  @id @db.VarChar
-  respuesta String? @db.VarChar
-}
-
-model respuesta_general3 {
-  id        String  @id @db.VarChar
-  respuesta String? @db.VarChar
-}
-
-model respuesta_general4 {
-  id        String  @id @db.VarChar
-  respuesta String? @db.VarChar
-}
-
-model evaluacion_general {
-  id                 Int     @id @default(autoincrement())
-  user_id            String  @unique(map: "user_id_unique") @db.VarChar
-  respuesta_general1 String? @db.VarChar
-  respuesta_general2 String? @db.VarChar
-  respuesta_general3 String? @db.VarChar
-  respuesta_general4 String? @db.VarChar
-  usuario            usuario @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "user_id")
-}
-
-model transferencia {
-  id       Int      @id @default(autoincrement())
-  user_id  String?  @db.VarChar
-  receiver String?  @db.VarChar
-  amount   Float?
-  date     DateTime @default(now())
-  usuario  usuario? @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "user_id")
-}
-
-model compra {
-  id         Int      @id @default(autoincrement())
-  email      String?  @db.VarChar
-  date       DateTime @default(now())
-  bank_order String?  @db.VarChar
-}
-
-model notificaciones {
-  id          Int      @id @default(autoincrement())
-  id_usuario  String?  @db.VarChar
-  descripcion String?  @db.VarChar
-  estado      Boolean? @default(false)
-  date        DateTime @default(now())
-  nombre      String?  @db.VarChar
-  tipo        String?  @db.VarChar
-  usuario     usuario? @relation(fields: [id_usuario], references: [id], onDelete: Cascade, onUpdate: NoAction)
-}
-
